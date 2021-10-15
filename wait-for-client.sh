@@ -3,7 +3,7 @@
 
 # wait for a response from the client
 echo -n "Waiting for the client to finish initializing..."
-while [ "$(curl -s -o /dev/null -w "%{http_code}" -m 1 localhost:3001)" != "200" ]
+while [ "$(curl -s -o /dev/null -w "%{http_code}" -m 1 https://jason.startupos.dev:443)" != "200" ]
 do
   sleep 1
   echo -n "."
@@ -13,7 +13,7 @@ done
 cat <<EOF
 
 The client is ready!
-Open localhost:3001 in your browser to view the client.
+Open https://jason.startupos.dev/ in your browser to view the client.
 Run 'make logs' to view the service logs.
 Run 'make stop' to stop the docker containers.
 Run 'make help' to view other available commands.

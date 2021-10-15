@@ -73,3 +73,9 @@ $(envfile):
 $(clear_db_after_schema_change): $(db_schema)
 	@$(MAKE) clear-db
 	@touch $(clear_db_after_schema_change)
+
+restart:
+	@echo Stopping Services
+	make stop
+	@echo Restarting
+	make start

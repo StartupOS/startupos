@@ -12,7 +12,9 @@ export default function Sockets() {
   const { getItemById } = useItems();
 
   useEffect(() => {
-    socket.current = io(`localhost:${REACT_APP_SERVER_PORT}`);
+    const host=window.location.host;
+    console.log(host);
+    socket.current = io(`${host}:${REACT_APP_SERVER_PORT}`);
 
     socket.current.on('DEFAULT_UPDATE', ({ itemId } = {}) => {
       const msg = `New Webhook Event: Item ${itemId}: New Transactions Received`;

@@ -19,15 +19,15 @@ const {
  *
  * @returns {Object} the public endpoint currently active.
  */
-router.get(
-  '/ngrok',
-  asyncWrapper(async (req, res) => {
-    const response = await fetch('http://ngrok:4040/api/tunnels');
-    const { tunnels } = await response.json();
-    const httpTunnel = tunnels.find(t => t.proto === 'http');
-    res.json({ url: httpTunnel.public_url });
-  })
-);
+// router.get(
+//   '/ngrok',
+//   asyncWrapper(async (req, res) => {
+//     const response = await fetch('http://ngrok:4040/api/tunnels');
+//     const { tunnels } = await response.json();
+//     const httpTunnel = tunnels.find(t => t.proto === 'http');
+//     res.json({ url: httpTunnel.public_url });
+//   })
+// );
 
 /**
  * Handles incoming webhooks from Plaid.

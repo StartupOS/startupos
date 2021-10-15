@@ -1,5 +1,6 @@
 FROM node:10.15.3-alpine
 
+COPY ["startupos.dev/", "/opt/client/startupos.dev/"]
 COPY ["package.json", "/opt/client/"]
 COPY ["package-lock.json", "/opt/client/"]
 
@@ -11,3 +12,4 @@ COPY ["src/", "/opt/client/src/"]
 COPY ["public/", "/opt/client/public/"]
 
 CMD ["npm", "start"]
+# CMD ["/bin/sh"]
