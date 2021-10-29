@@ -27,7 +27,6 @@ function App() {
 
   return (
     <div className="App">
-      <Menu />
       <InstitutionsProvider>
         <ItemsProvider>
           <LinkProvider>
@@ -38,8 +37,10 @@ function App() {
                     <CurrentUserProvider>
                       <AssetsProvider>
                         <Sockets />
+                        <Menu />
                         <Switch>
                           <Route exact path="/" component={Landing2} />
+                          <Route exact path="/linked_in_auth" component={Landing2} />
                           <Route path="/user/:userId" component={UserPage} />
                           <Route path="/oauth-link" component={OAuthLink} />
                           <Route path="/admin" component={UserList} />

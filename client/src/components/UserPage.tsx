@@ -37,6 +37,11 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     username: '',
     created_at: '',
     updated_at: '',
+    given_name: '',
+    family_name:'',
+    email: '',
+    picture:'',
+    token:null
   });
   const [items, setItems] = useState<ItemType[]>([]);
   const [token, setToken] = useState('');

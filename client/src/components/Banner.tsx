@@ -9,16 +9,16 @@ interface Props {
 
 const Banner = (props: Props) => {
   const initialText =
-    'This is an example app that outlines an end-to-end integration with Plaid.';
+    'Welcome to StartupOS. Please login.';
 
   const successText =
-    "This page shows a user's net worth, spending by category, and allows them to explore account and transactions details for linked items.";
+    "This page shows your startup's net worth, spending by category, and allows you to explore account and transactions details for linked items.";
 
   const subheadingText = props.initialSubheading ? initialText : successText;
 
   return (
     <div id="banner" className="bottom-border-content">
-      <h4><img src="/lifePreserver.png" alt="Logo"/> {PLAID_ENV} user</h4>
+      <h4><img src="/lifePreserver.png" alt="Logo" height="50px"/> {PLAID_ENV} user</h4>
       <div className="header">
         <h1 className="everpresent-content__heading">Plaid Pattern</h1>
         <Button

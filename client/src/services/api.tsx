@@ -15,7 +15,11 @@ const api = axios.create({
     Expires: 0,
   },
 });
-
+api.interceptors.request.use((config)=>{
+  const token = localStorage.getItem('token');
+  config.headers.Authorization =  token ? `Bearer ${token}` : '';
+  return config;
+});
 export default api;
 // currentUser
 export const getLoginUser = (username: string) =>

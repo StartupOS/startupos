@@ -21,6 +21,38 @@ const createUser = async username => {
 };
 
 /**
+ * Creates a LinkedIn user.
+ *
+ * @param {Object} user the username of the user.
+ * type User = {
+    firstName: string
+    lastName: string
+    email: string
+    profileImageURL: string
+}
+ * @returns {Object} the new user.
+ */
+
+
+ const createLinkedInUser = async (userobj) => {
+  const {firstName, lastName, email, profileImageURL} = userobj;
+  const username = email;
+  const query = {
+    // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
+    text: 'INSERT INTO users_table (username, given_name, family_name, email, picture, _json) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;',
+    values: [username, firstName, lastName, email, profileImageURL, JSON.stringify(userobj)],
+  };
+  try { 
+    const { rows } = await db.query(query);
+  } catch (err) {
+    console.log(err);
+  }
+
+  console.log(rows);
+  return rows[0];
+};
+
+/**
  * Removes users and related items, accounts and transactions.
  *
  *
@@ -58,12 +90,22 @@ const retrieveUserById = async userId => {
  * @returns {Object} a single user.
  */
 const retrieveUserByUsername = async username => {
+  console.log('in retrieve user by name');
   const query = {
     text: 'SELECT * FROM users WHERE username = $1',
     values: [username],
   };
-  const { rows: users } = await db.query(query);
+  let users =[];
+  console.log(query);
+  try {
+    const resp = await db.query(query);
+    // console.log(resp);
+    users = resp.rows;
+  } catch (e) {
+    console.log(e);
+  }
   // the username column has a UNIQUE constraint, so this will never return more than one row.
+  console.log(users);
   return users[0];
 };
 
@@ -82,6 +124,7 @@ const retrieveUsers = async () => {
 
 module.exports = {
   createUser,
+  createLinkedInUser,
   deleteUsers,
   retrieveUserById,
   retrieveUserByUsername,

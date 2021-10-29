@@ -3,7 +3,7 @@ import Button from 'plaid-threads/Button';
 import { useHistory } from 'react-router-dom';
 
 import { useCurrentUser } from '../services';
-import { Login, Banner, AddUserForm } from '.';
+import { Login, Banner, AddUserForm, LinkedIn } from '.';
 
 import { useBoolean } from '../hooks';
 
@@ -28,6 +28,7 @@ export default function Landing() {
       you can add as many example Link items as you like.
       <div className="btnsContainer">
         <Login />
+        <LinkedIn />
         <Button className="btnWithMargin" onClick={toggleForm} centered inline>
           Create Account
         </Button>

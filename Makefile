@@ -79,3 +79,22 @@ restart:
 	make stop
 	@echo Restarting
 	make start
+
+restart_client:
+	@echo Stopping client
+	docker-compose stop client
+	@echo removing client
+	yes | docker-compose rm client
+	@echo building client
+	docker-compose build client
+	@echo creating client service
+	docker-compose create client
+	@echo starting client service
+	docker-compose start client
+	./wait-for-client.sh
+
+stop_client:
+	@echo Stopping client
+	docker-compose stop client
+	@echo removing client
+	yes | docker-compose rm client

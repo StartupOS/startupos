@@ -21,3 +21,5 @@ export { default as Asset } from './Asset';
 export { default as LoadingCallout } from './LoadingCallout';
 export { default as ErrorMessage } from './ErrorMessage';
 export { default as Menu } from './Menu';
+export { default as LinkedIn} from './LinkedIn';
+export { default as Avatar} from './Avatar';

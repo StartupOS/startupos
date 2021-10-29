@@ -18,6 +18,14 @@ CREATE TABLE users_table
 (
   id SERIAL PRIMARY KEY,
   username text UNIQUE NOT NULL,
+  given_name text NOT NULL default 'John',
+  family_name text NOT NULL default 'Doe',
+  email text NOT NULL default 'doe@ayl.us',
+  picture text,
+  _json text,
+  verified_email boolean NOT NULL default false,
+  googleId text,
+  githubId text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
