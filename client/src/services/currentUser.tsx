@@ -9,6 +9,7 @@ import React, {
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { getLoginUser as apiGetLoginUser } from './api';
+import { getCurrentUser as apiGetCurrentUser } from './api'
 import { UserType } from '../components/types';
 
 interface CurrentUserState {
@@ -33,6 +34,7 @@ interface CurrentUserContextShape extends CurrentUserState {
   setNewUser: (username: string) => void;
   userState: CurrentUserState;
   setCurrentUser: (username: string) => void;
+  getCurrentUser: ()=>void;
   login: (username: string) => void;
 }
 const CurrentUserContext = createContext<CurrentUserContextShape>(
@@ -46,6 +48,21 @@ export function CurrentUserProvider(props: any) {
   const [userState, dispatch] = useReducer(reducer, initialState);
   const history = useHistory();
 
+  const getCurrentUser = useCallback(async () =>{
+    try {
+      const { data: payload } = await apiGetCurrentUser();
+    // const { data: payload } = await apiGetLoginUser(username);
+      if (payload != null) {
+        dispatch({ type: 'SUCCESSFUL_GET', payload: payload[0] });
+      } else {
+        dispatch({ type: 'FAILED_GET' });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+  },[]);
+
   /**
    * @desc Requests details for a single User.
    */
@@ -56,7 +73,7 @@ export function CurrentUserProvider(props: any) {
         if (payload != null) {
           toast.success(`Successful login.  Welcome back ${username}`);
           dispatch({ type: 'SUCCESSFUL_GET', payload: payload[0] });
-          history.push(`/user/${payload[0].id}`);
+          history.push(`/Dashboard}`);
         } else {
           toast.error(`Username ${username} is invalid.  Try again. `);
           dispatch({ type: 'FAILED_GET' });
@@ -77,7 +94,7 @@ export function CurrentUserProvider(props: any) {
           console.log('setCurrentUser');
           dispatch({ type: 'SUCCESSFUL_GET', payload: payload[0] });
           console.log(payload[0]);
-          history.push(`/user/${payload[0].id}`);
+          history.push(`/Dashboard`);
         } else {
           dispatch({ type: 'FAILED_GET' });
         }
@@ -101,9 +118,10 @@ export function CurrentUserProvider(props: any) {
       userState,
       login,
       setCurrentUser,
+      getCurrentUser,
       setNewUser
     };
-  }, [userState, login, setCurrentUser, setNewUser]);
+  }, [userState, login, setCurrentUser, getCurrentUser, setNewUser]);
 
   return <CurrentUserContext.Provider value={value} {...props} />;
 }
@@ -114,6 +132,7 @@ export function CurrentUserProvider(props: any) {
 function reducer(state: CurrentUserState, action: CurrentUserAction | any) {
   switch (action.type) {
     case 'SUCCESSFUL_GET':
+      if(action.payload && action.payload.token) localStorage.setItem('token', action.payload.token);
       return {
         currentUser: action.payload,
         newUser: null,

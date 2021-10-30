@@ -67,7 +67,7 @@ export default function UserCard(props: Props) {
           <Touchable
             className="user-card-clickable"
             component={HashLink}
-            to={`/user/${props.userId}#itemCards`}
+            to={`/Dashboard#itemCards`}
           >
             <div className="user-card__detail">
               <UserDetails

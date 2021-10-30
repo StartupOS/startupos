@@ -12,11 +12,14 @@ const api = axios.create({
   headers: {
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     Pragma: 'no-cache',
-    Expires: 0,
+    Expires: '0',
   },
 });
 api.interceptors.request.use((config)=>{
   const token = localStorage.getItem('token');
+  if(config.headers === undefined){
+    config.headers={}
+  }
   config.headers.Authorization =  token ? `Bearer ${token}` : '';
   return config;
 });
@@ -24,6 +27,10 @@ export default api;
 // currentUser
 export const getLoginUser = (username: string) =>
   api.post('/sessions', { username });
+
+export const getCurrentUser = () => {
+  return api.post('/sessions/me');
+};
 
 // assets
 export const addAsset = (userId: number, description: string, value: number) =>
@@ -92,9 +99,8 @@ export const exchangeToken = async (
       accounts,
     });
     return data;
-  } catch (err) {
-    const { response } = err;
-    if (response && response.status === 409) {
+  } catch (err:any) {
+    if (err.response && err.response.status === 409) {
       toast.error(
         <DuplicateItemToastMessage institutionName={institution.name} />
       );

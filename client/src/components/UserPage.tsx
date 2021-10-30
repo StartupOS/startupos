@@ -13,6 +13,7 @@ import {
   useUsers,
   useAssets,
   useLink,
+  useCurrentUser
 } from '../services';
 
 import { pluralize } from '../util';
@@ -32,7 +33,8 @@ import {
 // account and transactions details for linked items
 
 const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
-  const [user, setUser] = useState({
+  const { userState } = useCurrentUser();
+  const user=userState.currentUser.id ? userState.currentUser : {
     id: 0,
     username: '',
     created_at: '',
@@ -42,7 +44,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     email: '',
     picture:'',
     token:null
-  });
+  };
   const [items, setItems] = useState<ItemType[]>([]);
   const [token, setToken] = useState('');
   const [numOfItems, setNumOfItems] = useState(0);
@@ -55,37 +57,32 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { assetsByUser, getAssetsByUser } = useAssets();
   const { usersById, getUserById } = useUsers();
   const { itemsByUser, getItemsByUser } = useItems();
-  const userId = Number(match.params.userId);
+  // const userId = Number(match.params.userId);
   const { generateLinkToken, linkTokens } = useLink();
-
-  // update data store with user
-  useEffect(() => {
-    getUserById(userId, false);
-  }, [getUserById, userId]);
-
-  // set state user from data store
-  useEffect(() => {
-    setUser(usersById[userId] || {});
-  }, [usersById, userId]);
+  const userId=userState.currentUser.id
 
   useEffect(() => {
     // This gets transactions from the database only.
     // Note that calls to Plaid's transactions/get endpoint are only made in response
     // to receipt of a transactions webhook.
-    getTransactionsByUser(userId);
+    if(userId)
+      getTransactionsByUser(userId);
   }, [getTransactionsByUser, userId]);
 
   useEffect(() => {
-    setTransactions(transactionsByUser[userId] || []);
+    if(userId)
+      setTransactions(transactionsByUser[userId] || []);
   }, [transactionsByUser, userId]);
 
   // update data store with the user's assets
   useEffect(() => {
-    getAssetsByUser(userId);
+    if(userId)
+      getAssetsByUser(userId);
   }, [getAssetsByUser, userId]);
 
   useEffect(() => {
-    setAssets(assetsByUser.assets || []);
+    if(userId)
+      setAssets(assetsByUser.assets || []);
   }, [assetsByUser, userId]);
 
   // update data store with the user's items

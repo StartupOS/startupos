@@ -3,13 +3,10 @@ import Button from 'plaid-threads/Button';
 import { useHistory } from 'react-router-dom';
 
 import { useCurrentUser } from '../services';
-import { Login, Banner, AddUserForm, LinkedIn } from '.';
-
-import { useBoolean } from '../hooks';
+import { Banner } from '.';
 
 export default function Landing() {
   const { userState, setCurrentUser } = useCurrentUser();
-  const [isAdding, hideForm, toggleForm] = useBoolean(false);
   const history = useHistory();
 
   useEffect(() => {
@@ -24,14 +21,9 @@ export default function Landing() {
   return (
     <div>
       <Banner initialSubheading />
-      If you don't have an account, please click "Create Account". Once created,
+      Please login under the profile icon above. If you don't have an account, one will be created the first time you sign in. Once created,
       you can add as many example Link items as you like.
       <div className="btnsContainer">
-        <Login />
-        <LinkedIn />
-        <Button className="btnWithMargin" onClick={toggleForm} centered inline>
-          Create Account
-        </Button>
         {userState.currentUser.username != null && (
           <Button
             className="btnWithMargin"
@@ -43,7 +35,6 @@ export default function Landing() {
           </Button>
         )}
       </div>
-      {isAdding && <AddUserForm hideForm={hideForm} />}
     </div>
   );
 }

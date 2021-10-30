@@ -57,7 +57,7 @@ export default function LinkButton(props: Props) {
       getItemsByUser(props.userId, true);
     }
     resetError();
-    history.push(`/user/${props.userId}`);
+    history.push(`Dashboard`);
   };
 
   const onExit = async (

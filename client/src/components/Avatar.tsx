@@ -1,16 +1,18 @@
 import React, { useEffect } from 'react';
-import { Avatar, Popover, Typography } from '@mui/material';
+import { Avatar, Popover, Typography, AvatarProps } from '@mui/material';
 import { useCurrentUser } from '../services';
 import { blue } from '@mui/material/colors';
 
 import {LinkedIn} from '.';
 
-export default function SOSAvatar(){
+export default function SOSAvatar(props:any){
+    const {showPopup } = props;
     const { userState } = useCurrentUser();
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handleClick = (event:Event) => {
+        if (event.target instanceof Element)
+            setAnchorEl(event.target);
     };
 
     const handleClose = () => {
@@ -19,13 +21,15 @@ export default function SOSAvatar(){
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
-    if(userState.currentUser){
+    const Avatar2 = Avatar as any;
+    if(userState.currentUser && userState.currentUser.id){
         return (
-            <div>
-            <Avatar
+            <div className="Avatar">
+            <Avatar2
                 sx={{ bgcolor: blue[900] }}
                 alt={userState.currentUser.given_name + " " + userState.currentUser.family_name}
                 src={userState.currentUser.picture}
+                onClick={handleClick}
             />
             <Popover
                 id={id}
@@ -47,8 +51,9 @@ export default function SOSAvatar(){
         )
     } else {
         return (
-            <div>
-            <Avatar
+            <div className="Avatar">
+            <Avatar2
+                onClick={handleClick}
                 sx={{ bgcolor: blue[900] }}
             />
             <Popover
@@ -65,7 +70,7 @@ export default function SOSAvatar(){
                     horizontal: 'right'
                 }}
             >
-                <LinkedIn />
+                <LinkedIn onClick={showPopup}/>
             </Popover>
             </div>
         )
