@@ -1,4 +1,4 @@
-import { formatDistanceToNow, toDate } from 'date-fns';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 import {
   PlaidLinkOnSuccessMetadata,
   PlaidLinkOnExitMetadata,
@@ -65,8 +65,7 @@ export function formatDate(timestamp: string) {
  * @desc Checks the difference between the current time and a provided time
  */
 export function diffBetweenCurrentTime(timestamp: string) {
-  
-  return formatDistanceToNow(toDate(timestamp), {
+  return formatDistanceToNow(parseISO(timestamp), {
     addSuffix: true,
     includeSeconds: true,
   }).replace(/^(about|less than)\s/i, '');

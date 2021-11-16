@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Avatar, Popover, Typography } from '@mui/material';
 import { useCurrentUser } from '../services';
 import { blue } from '@mui/material/colors';
@@ -9,9 +9,9 @@ export default function SOSAvatar(){
     const { userState } = useCurrentUser();
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+    // const handleClick = (event:any) => {
+    //     setAnchorEl(event.currentTarget);
+    // };
 
     const handleClose = () => {
         setAnchorEl(null);

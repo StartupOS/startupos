@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import linkedInLoginImage from './Sign-In-Small---Default.png';
 import { useCurrentUser } from '../services';
@@ -13,7 +13,7 @@ type User = {
 console.log(process.env);
 
 export default function LinkedIn(){
-  const { userState, setCurrentUser } = useCurrentUser();
+  const { setCurrentUser } = useCurrentUser();
   const [loggedIn, setLoggedIn]= useState(false);
   const [user, setUser] = useState<User|null>(null);
 
@@ -82,7 +82,7 @@ export default function LinkedIn(){
     window.addEventListener('message', handlePostMessage);
     const content = loggedIn && user?(
         <>
-          <img src={user.picture} alt="Profile image" />
+          <img src={user.picture} alt="Profile" />
           <h3>{`${user.given_name} ${user.family_name}`}</h3>
           <h3>{user.email}</h3>
         </>

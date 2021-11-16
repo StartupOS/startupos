@@ -12,13 +12,15 @@ const api = axios.create({
   headers: {
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     Pragma: 'no-cache',
-    Expires: 0,
+    Expires: '0',
   },
 });
 api.interceptors.request.use((config)=>{
-  const token = localStorage.getItem('token');
-  config.headers.Authorization =  token ? `Bearer ${token}` : '';
-  return config;
+  const token = localStorage.getItem('token') || '';
+  if(config && config.headers) {
+    config.headers.Authorization =  token ? `Bearer ${token}` : '';
+    return config;
+  } else return null;
 });
 export default api;
 // currentUser
@@ -92,7 +94,7 @@ export const exchangeToken = async (
       accounts,
     });
     return data;
-  } catch (err) {
+  } catch (err:any) {
     const { response } = err;
     if (response && response.status === 409) {
       toast.error(
