@@ -5,7 +5,8 @@ import { blue } from '@mui/material/colors';
 
 import {LinkedIn} from '.';
 
-export default function SOSAvatar(){
+export default function SOSAvatar(props:any){
+    const {showPopup } = props;
     const { userState } = useCurrentUser();
     const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 

@@ -112,6 +112,7 @@ router.get('/LinkedInCode',asyncWrapper(async (req,res)=>{
       }
     }
     console.log(retJSON);
+    retJSON.tiat = Date.now();
     const token = jwt.sign(retJSON, 'BOTTOM_SECRET');
     retJSON.token = token;
   }

@@ -9,12 +9,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- TODO
+-- CREATE OR REPLACE FUNCTION trigger_add_subject()
+-- RETURNS void AS $$
+-- BEGIN
+--   NEW.updated_at = NOW();
+--   insert into subjects(type) values (TG_TABLE_NAME, OLD.id)
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+-- create trigger add_subject before insert on users_table
+--     for each row EXECUTE PROCEDURE
 
 -- USERS
 -- This table is used to store the users of our application. The view returns the same data as the
 -- table, we're just creating it to follow the pattern used in other tables.
 
-CREATE TABLE users_table
+CREATE TABLE if not exists users_table
 (
   id SERIAL PRIMARY KEY,
   username text UNIQUE NOT NULL,
@@ -27,7 +38,13 @@ CREATE TABLE users_table
   googleId text,
   githubId text,
   created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  updated_at timestamptz default now(),
+  organizations integer[],
+  groups integer[],
+  subject_id integer,
+  constraint fk_subjects
+    foreign key(subject_id)
+      references subjects(id)
 );
 
 CREATE TRIGGER users_updated_at_timestamp
@@ -51,10 +68,10 @@ AS
 -- as the table, we're just using both to maintain consistency with our other tables. For more info
 -- on the Plaid Item schema, see the docs page: https://plaid.com/docs/#item-schema
 
-CREATE TABLE items_table
+CREATE TABLE if not exists items_table
 (
   id SERIAL PRIMARY KEY,
-  user_id integer REFERENCES users_table(id) ON DELETE CASCADE,
+  organization_id integer REFERENCES organizations(id) ON DELETE CASCADE,
   plaid_access_token text UNIQUE NOT NULL,
   plaid_item_id text UNIQUE NOT NULL,
   plaid_institution_id text NOT NULL,
@@ -73,7 +90,7 @@ AS
   SELECT
     id,
     plaid_item_id,
-    user_id,
+    organization_id,
     plaid_access_token,
     plaid_institution_id,
     status,
@@ -87,10 +104,10 @@ AS
 -- -- This table is used to store the assets associated with each user. The view returns the same data
 -- -- as the table, we're just using both to maintain consistency with our other tables.
 
-CREATE TABLE assets_table
+CREATE TABLE if not exists assets_table
 (
   id SERIAL PRIMARY KEY,
-  user_id integer REFERENCES users_table(id) ON DELETE CASCADE,
+  organization_id integer REFERENCES organizations(id) ON DELETE CASCADE,
   value numeric(28,2),
   description text,
   created_at timestamptz default now(),
@@ -106,7 +123,7 @@ CREATE VIEW assets
 AS
   SELECT
     id,
-    user_id,
+    organization_id,
     value,
     description,
     created_at,
@@ -122,7 +139,7 @@ AS
 -- data from the accounts table and some data from the items view. For more info on the Plaid
 -- Accounts schema, see the docs page:  https://plaid.com/docs/#account-schema
 
-CREATE TABLE accounts_table
+CREATE TABLE if not exists accounts_table
 (
   id SERIAL PRIMARY KEY,
   item_id integer REFERENCES items_table(id) ON DELETE CASCADE,
@@ -174,7 +191,7 @@ AS
 -- the data from the transactions table and some data from the accounts view. For more info on the
 -- Plaid Transactions schema, see the docs page: https://plaid.com/docs/#transaction-schema
 
-CREATE TABLE transactions_table
+CREATE TABLE if not exists transactions_table
 (
   id SERIAL PRIMARY KEY,
   account_id integer REFERENCES accounts_table(id) ON DELETE CASCADE,
@@ -229,7 +246,7 @@ AS
 -- The link_events_table is used to log responses from the Plaid API for client requests to the
 -- Plaid Link client. This information is useful for troubleshooting.
 
-CREATE TABLE link_events_table
+CREATE TABLE if not exists link_events_table
 (
   id SERIAL PRIMARY KEY,
   type text NOT NULL,
@@ -246,7 +263,7 @@ CREATE TABLE link_events_table
 -- The plaid_api_events_table is used to log responses from the Plaid API for server requests to
 -- the Plaid client. This information is useful for troubleshooting.
 
-CREATE TABLE plaid_api_events_table
+CREATE TABLE if not exists plaid_api_events_table
 (
   id SERIAL PRIMARY KEY,
   item_id integer,
@@ -259,17 +276,77 @@ CREATE TABLE plaid_api_events_table
   created_at timestamptz default now()
 );
 
+CREATE TABLE if not exists organizations
+(
+  id SERIAL PRIMARY KEY,
+  name text UNIQUE,
+  description text,
+  logo text,
+  street1 text,
+  street2 text,
+  city text,
+  state text,
+  coountry text,
+  owner integer NOT NULL REFERENCES users_table(id) ON DELETE CASCADE
+  -- TODO re:Subjects
+  -- subject_id integer,
+  -- constraint fk_subjects
+  --   foreign key(subject_id)
+  --     references subjects(id)
+)
 
---  
--- 
+-- CREATE TABLE groups
+-- (
+--   id SERIAL PRIMARY KEY,
+--   name text UNIQUE,
+--   owner integer NOT NULL,
+--   organization integer.
+--   subject_id integer,
+--   constraint fk_subjects
+--     foreign key(subject_id)
+--       references subjects(id)
+-- )
 
-CREATE TABLE organizations (
-    "id" serial PRIMARY KEY,
-    "name" text,
-    "user_id" integer,
-    "account_id" integer,
-    "created_at" timestamptz default now(),
-    "updated_at" timestamptz default now(),
-    CONSTRAINT "user_id" REFERENCES "public"."users_table"("id"),
-    CONSTRAINT "account_id" REFERENCES "public"."accounts_table"("id")
-);
+-- CREATE TABLE permissions
+-- (
+--   id SERIAL PRIMARY KEY,
+--   subject text NOT NULL, 
+--   object text NOT NULL, 
+--   verb text NOT NULL, 
+--   context text,
+--   constraint fk_subject_id
+--     foreign key(subject)
+--     references subjects(id)
+-- )
+
+-- create table subjects
+-- (
+--   id SERIAL PRIMARY KEY,
+--   type text NOT NULL,
+--   host_id int
+-- )
+
+-- create table group_memberships
+-- (
+--   user_id int,
+--   group_id int,
+--   constraint fk_user_id
+--     foreign key(user_id)
+--     references users_table(id)
+--   constraint fk_group_id
+--     foreign key(group_id)
+--     references groups(id)
+-- )
+
+create table organization_memberships
+(
+  id SERIAL PRIMARY KEY,
+  user_id int,
+  organization_id int,
+  constraint fk_user_id
+    foreign key(user_id)
+    references users_table(id)
+  constraint fk_organization_id
+    foreign key(organization_id)
+    references organizations(id)
+)

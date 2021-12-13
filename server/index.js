@@ -44,6 +44,7 @@ passport.use(
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken()
     },
     async (token, done) => {
+      console.log('authorization');
       console.log(token);
       try {
         const user = token;
@@ -90,7 +91,7 @@ app.get('/test', (req, res) => {
 });
 
 app.use('/users', usersRouter);
-app.use('/sessions', sessionsRouter);
+app.use('/sessions', passport.authenticate('jwt', { session: false }), sessionsRouter);
 app.use('/items', passport.authenticate('jwt', { session: false }), itemsRouter);
 app.use('/accounts', passport.authenticate('jwt', { session: false }), accountsRouter);
 app.use('/institutions', passport.authenticate('jwt', { session: false }), institutionsRouter);

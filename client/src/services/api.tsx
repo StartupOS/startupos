@@ -1,5 +1,4 @@
 import axios from 'axios';
-import React from 'react';
 import { toast } from 'react-toastify';
 import { PlaidLinkOnSuccessMetadata } from 'react-plaid-link';
 
@@ -26,6 +25,10 @@ export default api;
 // currentUser
 export const getLoginUser = (username: string) =>
   api.post('/sessions', { username });
+
+export const getCurrentUser = () => {
+  return api.post('/sessions/me');
+};
 
 // assets
 export const addAsset = (userId: number, description: string, value: number) =>

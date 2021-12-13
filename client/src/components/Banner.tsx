@@ -17,10 +17,8 @@ const Banner = (props: Props) => {
 
   return (
     <div id="banner" className="bottom-border-content">
-      {/* <h4><img src="/lifePreserver.png" alt="Logo" height="50px"/> {PLAID_ENV} user</h4> */}
       <div className="header">
         <h1 className="everpresent-content__heading">StartupOS</h1>
-
       </div>
       <p id="intro" className="everpresent-content__subheading">
         {subheadingText}
