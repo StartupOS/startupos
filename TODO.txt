@@ -1,0 +1,42 @@
+X Update create.sql to Create Table If NOT Exists
+X Users can create Orgs
+X Items should be linked to Orgs
+X Assets linked to Orgs
+Users view Orgs
+    Org Selection Page
+        Server: Get Orgs (user_id)=>orgs
+            Routes
+            Queries
+            Associate User to Org (Organization Membership Table)
+        Client: Org Selection Component ([orgs])=>List of Links
+    Org Summary Page
+        /company/<orgid> => Shows Assets, Liabilities, change in cash
+    Org Settings
+        Configuration
+            Org Name
+            Org Logo
+            Org Description
+            Org Address
+            Org Owner
+        Members & Permissions
+            View
+            Edit
+            Invite by email address
+                Check if have account
+                Create notification
+    Org Reports
+    Org Reports Selection Page
+
+Notifications Table
+    From Integer
+    FromType Text (Org, Group, User)
+    To Integer
+    To Type (Org, Group, User)
+    Message Text
+    Read Boolean
+    Archived Boolean
+
+Users can create Groups
+    Org Groups Page
+    Groups can be sharing targets
+    Owners can add members
