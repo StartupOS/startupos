@@ -23,3 +23,4 @@ export { default as ErrorMessage } from './ErrorMessage';
 export { default as Menu } from './Menu';
 export { default as LinkedIn} from './LinkedIn';
 export { default as Avatar} from './Avatar';
+export { default as SOSButton} from './SOSButton';

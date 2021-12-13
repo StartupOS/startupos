@@ -1,9 +1,11 @@
-import {Avatar} from '.';
+import {Avatar, SOSButton} from '.';
+
 
 export default function Menu(){
     return(
-        <div>
+        <div className="SOS_Menu">
             <Avatar />
+            <SOSButton />
         </div>
     )
 }

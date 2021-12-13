@@ -6,16 +6,16 @@ import { useCurrentUser } from '../services';
 type User = {
     given_name: string
     family_name: string
-    email: string
+    email: string | null
     picture: string
 }
 
 console.log(process.env);
 
 export default function LinkedIn(){
-  const { setCurrentUser } = useCurrentUser();
-  const [loggedIn, setLoggedIn]= useState(false);
-  const [user, setUser] = useState<User|null>(null);
+  const { userState, setCurrentUser } = useCurrentUser();
+  const [loggedIn, setLoggedIn]= useState(!!userState.currentUser.email);
+  const [user, setUser] = useState<User|null>(userState.currentUser);
 
   const getCodeFromWindowURL = (url:string) => {
       const popupWindowURL = new URL(url);
@@ -80,6 +80,7 @@ export default function LinkedIn(){
         window.close();
     }
     window.addEventListener('message', handlePostMessage);
+    console.log(user);
     const content = loggedIn && user?(
         <>
           <img src={user.picture} alt="Profile" />

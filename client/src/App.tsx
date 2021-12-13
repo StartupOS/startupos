@@ -15,6 +15,7 @@ import { AssetsProvider } from './services/assets';
 import { ErrorsProvider } from './services/errors';
 
 import './App.scss';
+import './StartupOS.scss';
 
 function App() {
   toast.configure({

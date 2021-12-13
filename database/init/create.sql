@@ -258,3 +258,18 @@ CREATE TABLE plaid_api_events_table
   error_code text,
   created_at timestamptz default now()
 );
+
+
+--  
+-- 
+
+CREATE TABLE organizations (
+    "id" serial PRIMARY KEY,
+    "name" text,
+    "user_id" integer,
+    "account_id" integer,
+    "created_at" timestamptz default now(),
+    "updated_at" timestamptz default now(),
+    CONSTRAINT "user_id" REFERENCES "public"."users_table"("id"),
+    CONSTRAINT "account_id" REFERENCES "public"."accounts_table"("id")
+);
