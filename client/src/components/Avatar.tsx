@@ -9,10 +9,6 @@ export default function SOSAvatar(){
     const { userState } = useCurrentUser();
     const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
-    // const handleClick = (event:any) => {
-    //     setAnchorEl(event.currentTarget);
-    // };
-
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -24,14 +20,6 @@ export default function SOSAvatar(){
             handleClose();
         }
     }
-
-    // const avatar = (
-    //         <Avatar
-    //             sx={{ bgcolor: blue[900] }}
-    //             alt={userState.currentUser.given_name + " " + userState.currentUser.family_name}
-    //             src={userState.currentUser.picture}
-    //             />);
-    // avatar.onclick=onClick;
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
