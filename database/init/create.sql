@@ -280,6 +280,7 @@ CREATE TABLE if not exists organizations
 (
   id SERIAL PRIMARY KEY,
   name text UNIQUE,
+  ein text UNIQUE,
   description text,
   logo text,
   street1 text,
@@ -343,6 +344,7 @@ create table organization_memberships
   id SERIAL PRIMARY KEY,
   user_id int,
   organization_id int,
+  membership_type text,
   constraint fk_user_id
     foreign key(user_id)
     references users_table(id)

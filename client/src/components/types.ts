@@ -104,13 +104,13 @@ export enum Verb {
   removePermission='removePermission'
 }
 
-type Context = {
+export type Context = {
   tokenAuthed? : boolean;
   inCIDR? : string;
   retries? : number;
 }
 
-type User = {
+export type User = {
   given_name: string
   family_name: string
   email: string

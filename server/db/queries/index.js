@@ -42,6 +42,14 @@ const {
   deleteAssetByAssetId,
 } = require('./assets');
 
+const {
+  createCompany,
+  listCompanies,
+  retrieveCompany,
+  updateCompany,
+  deleteCompany
+} = require('./companies');
+
 module.exports = {
   // accounts
   createAccounts,
@@ -78,4 +86,10 @@ module.exports = {
   deleteAssetByAssetId,
   // link events
   createLinkEvent,
+  // companies
+  createCompany,
+  listCompanies,
+  retrieveCompany,
+  updateCompany,
+  deleteCompany,
 };

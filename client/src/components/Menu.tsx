@@ -1,7 +1,6 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
-import Button from '@mui/material/Button';
 
 import {Avatar, Alerts, SOSButton} from '.';
 import { useCurrentUser } from '../services';
@@ -15,11 +14,10 @@ type User = {
 
 export default function Menu(){
   const { userState, getCurrentUser, setCurrentUser } = useCurrentUser();
-  const token = localStorage.getItem('token');
 
   useEffect(() => {
     getCurrentUser();
-  }, []);
+  }, [getCurrentUser]);
 
   const getCodeFromWindowURL = (url:string) => {
       const popupWindowURL = new URL(url);
@@ -95,7 +93,7 @@ export default function Menu(){
     window.addEventListener('message', handlePostMessage);
   console.log(userState);
     return(
-        <div>
+        <div className="SOS_Menu">
             <Link to="/Dashboard">
               Dashboard 
             </Link> 
@@ -105,11 +103,11 @@ export default function Menu(){
             <Link to="/Reporting">
               Reporting 
             </Link> 
-            <Button variant="contained" startIcon={<img src="./lifePreserver.png" height="20em" />} className="SOS_Button">
-              SOS
-            </Button>
-            <Avatar showPopup={showPopup}/>
+            
             <Alerts />
+            <Avatar showPopup={showPopup}/>
+            <SOSButton />
+            
         </div>
     )
 }

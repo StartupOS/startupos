@@ -33,7 +33,10 @@ import {
 // account and transactions details for linked items
 
 const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
-  const { userState } = useCurrentUser();
+  const { userState, getCurrentUser } = useCurrentUser();
+  useEffect(() => {
+    getCurrentUser();
+}, [getCurrentUser]);
   const user=userState.currentUser.id ? userState.currentUser : {
     id: 0,
     username: '',

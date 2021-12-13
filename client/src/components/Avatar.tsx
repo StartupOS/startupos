@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Avatar, Popover, Typography, Button } from '@mui/material';
+import { Link } from "react-router-dom";
+
 import { useCurrentUser } from '../services';
 import { blue } from '@mui/material/colors';
 
 import {LinkedIn} from '.';
 
 export default function SOSAvatar(props:any){
-    const {showPopup } = props;
-    const { userState } = useCurrentUser();
+    const { userState, getCurrentUser } = useCurrentUser();
+    console.log(userState)
+    useEffect(() => {
+        getCurrentUser();
+    }, [getCurrentUser]);
     const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
     const handleClose = () => {
@@ -26,7 +31,7 @@ export default function SOSAvatar(props:any){
     const id = open ? 'simple-popover' : undefined;
     if(userState.currentUser.email){
         return (
-            <div>
+            <div className="Avatar">
                 <Button onClick={onClick}>
                     <Avatar
                         sx={{ bgcolor: blue[900] }}
@@ -48,7 +53,9 @@ export default function SOSAvatar(props:any){
                         horizontal: 'right'
                     }}
                 >
-                    <Typography sx={{ p: 2 }}> Profile Information and link to edit</Typography>
+                    <Link to="/Companies">
+                        Companies 
+                    </Link> 
                 </Popover>
             </div>
         )

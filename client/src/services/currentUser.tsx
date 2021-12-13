@@ -51,6 +51,7 @@ export function CurrentUserProvider(props: any) {
   const getCurrentUser = useCallback(async () =>{
     try {
       const { data: payload } = await apiGetCurrentUser();
+      console.log(payload[0]);
     // const { data: payload } = await apiGetLoginUser(username);
       if (payload != null) {
         dispatch({ type: 'SUCCESSFUL_GET', payload: payload[0] });

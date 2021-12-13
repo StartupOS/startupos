@@ -25,6 +25,7 @@ const {
   linkTokensRouter,
   unhandledRouter,
   assetsRouter,
+  companyRouter
 } = require('./routes');
 
 const app = express();
@@ -99,6 +100,7 @@ app.use('/services', serviceRouter);
 app.use('/link-event', passport.authenticate('jwt', { session: false }), linkEventsRouter);
 app.use('/link-token', passport.authenticate('jwt', { session: false }), linkTokensRouter);
 app.use('/assets', passport.authenticate('jwt', { session: false }), assetsRouter);
+app.use('/companies', passport.authenticate('jwt', { session: false }), companyRouter);
 app.use('*', unhandledRouter);
 
 // Error handling has to sit at the bottom of the stack.
