@@ -276,7 +276,7 @@ CREATE TABLE if not exists plaid_api_events_table
   created_at timestamptz default now()
 );
 
-CREATE TABLE if not exists organizations
+CREATE TABLE if not exists organizations_table
 (
   id SERIAL PRIMARY KEY,
   name text UNIQUE,
@@ -287,14 +287,14 @@ CREATE TABLE if not exists organizations
   street2 text,
   city text,
   state text,
-  coountry text,
+  country text,
   owner integer NOT NULL REFERENCES users_table(id) ON DELETE CASCADE
   -- TODO re:Subjects
   -- subject_id integer,
   -- constraint fk_subjects
   --   foreign key(subject_id)
   --     references subjects(id)
-)
+);
 
 -- CREATE TABLE groups
 -- (
@@ -342,13 +342,7 @@ CREATE TABLE if not exists organizations
 create table organization_memberships
 (
   id SERIAL PRIMARY KEY,
-  user_id int,
-  organization_id int,
-  membership_type text,
-  constraint fk_user_id
-    foreign key(user_id)
-    references users_table(id)
-  constraint fk_organization_id
-    foreign key(organization_id)
-    references organizations(id)
+  user_id int not null references users_table(id) on DELETE CASCADE,
+  organization_id int not null references organizations_table(id) on DELETE CASCADE,
+  membership_type text
 )

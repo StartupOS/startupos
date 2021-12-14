@@ -78,13 +78,19 @@ app.use((req, res, next) => {
 
 app.use(passport.initialize());
 
+let logOnce= true;
+
 // Set socket.io listeners.
 io.on('connection', socket => {
-  console.log('SOCKET CONNECTED');
+  if(logOnce){
+    console.log('SOCKET CONNECTED');
+    console.log(socket);
 
-  socket.on('disconnect', () => {
-    console.log('SOCKET DISCONNECTED');
-  });
+    socket.on('disconnect', () => {
+      console.log('SOCKET DISCONNECTED');
+    });
+    logOnce = false;
+  }
 });
 
 app.get('/test', (req, res) => {

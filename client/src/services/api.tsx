@@ -3,6 +3,9 @@ import { toast } from 'react-toastify';
 import { PlaidLinkOnSuccessMetadata } from 'react-plaid-link';
 
 import { DuplicateItemToastMessage } from '../components';
+import { number } from 'prop-types';
+import { CompanyType } from '../components/types';
+
 
 const baseURL = '/';
 
@@ -29,6 +32,15 @@ export const getLoginUser = (username: string) =>
 export const getCurrentUser = () => {
   return api.post('/sessions/me');
 };
+
+//companies
+export const listCompanies = ()=>api.get('/companies');
+export const getCompany = (companyId: number)=>api.get('/companies/'+companyId);
+export const createCompany = (company: CompanyType)=>api.post('/companies/', company);
+export const updateCompany = (company: CompanyType)=>api.get('/companies/'+company.id);
+export const deleteCompany = (companyId: number)=>api.get('/companies/'+companyId);
+
+
 
 // assets
 export const addAsset = (userId: number, description: string, value: number) =>

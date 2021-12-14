@@ -19,14 +19,23 @@ const router = express.Router();
 
 router.post('/', asyncWrapper(
     async (req,res) => {
+        console.log(req);
         const user = await req.user;
         const company = req.body;
+        console.log(user);
+        console.log(company);
         // make this user owner (userID)
         company.owner = user.id;
 
         // attempt to create if EIN and Name unique
-        const newCompany = await createCompany(company)
-        res.json(newCompany);
+        try{
+            const newCompany = await createCompany(company)
+            res.json(newCompany);
+        } catch (ex) {
+            console.log(ex);
+            throw new Boom('Username already exists', { statusCode: 500, payload:{message: ex.message} });
+        }
+        
     }
 ))
 

@@ -21,6 +21,7 @@ import { UsersProvider } from './services/users';
 import { CurrentUserProvider } from './services/currentUser';
 import { AssetsProvider } from './services/assets';
 import { ErrorsProvider } from './services/errors';
+import { CompaniesProvider } from './services/companies'
 
 import './App.scss';
 import './StartupOS.scss';
@@ -46,17 +47,19 @@ function App() {
                   <UsersProvider>
                     <CurrentUserProvider>
                       <AssetsProvider>
-                        <Sockets />
-                        <Menu />
-                        <Switch>
-                          <Route exact path="/" component={Landing2} />
-                          <Route exact path="/Blank" component={Blank} />
-                          <Route exact path="/linked_in_auth" component={Landing2} />
-                          <Route path="/Dashboard" component={UserPage} />
-                          <Route path="/Companies" component={CompaniesPage} />
-                          <Route path="/oauth-link" component={OAuthLink} />
-                          <Route path="/admin" component={UserList} />
-                        </Switch>
+                        <CompaniesProvider>
+                          <Sockets />
+                          <Menu />
+                          <Switch>
+                            <Route exact path="/" component={Landing2} />
+                            <Route exact path="/Blank" component={Blank} />
+                            <Route exact path="/linked_in_auth" component={Landing2} />
+                            <Route path="/Dashboard" component={UserPage} />
+                            <Route path="/Companies" component={CompaniesPage} />
+                            <Route path="/oauth-link" component={OAuthLink} />
+                            <Route path="/admin" component={UserList} />
+                          </Switch>
+                        </CompaniesProvider>
                       </AssetsProvider>
                     </CurrentUserProvider>
                   </UsersProvider>

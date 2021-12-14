@@ -116,3 +116,17 @@ export type User = {
   email: string
   picture: string
 }
+
+export type CompanyType = {
+  id: number;
+  name: string;
+  ein: string;
+  description: string | null;
+  logo: string | null;
+  street1: string;
+  street2: string | null;
+  city: string;
+  state: string;
+  country: string;
+  owner: number;
+}

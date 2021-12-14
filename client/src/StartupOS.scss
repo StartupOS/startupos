@@ -1,3 +1,5 @@
+@import '~plaid-threads/scss/variables';
+
 div.Avatar {
     float: right;
 }
@@ -16,4 +18,32 @@ div.Avatar {
 .Notifications{
     float:right;
     font-size: xx-large;
+}
+
+div.CompanyCard{
+    width: fit-content;
+    border: 1px solid black;
+    padding: 5px;
+    padding-right: 10px;
+    border-radius: 10px;
+    margin: 10px;
+    cursor: pointer;
+}
+div.CompanyCard:hover{
+    background-color: $color-action-hover;
+    color:$white;
+}
+
+div.CompanyCard div.CompanyLogo{
+    float:left;
+    margin-right:5px;
+}
+div.CompanyCard div.CompanyLogo>img{
+    height:5em;
+}
+
+div.CompanyCard div.CompanyName{
+    float:left;
+    font-weight: bolder;
+    font-size: larger;
 }

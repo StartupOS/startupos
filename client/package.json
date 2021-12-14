@@ -35,7 +35,7 @@
     "eject": "react-scripts eject",
     "lint": "eslint src -c .eslintrc --ext js,jsx",
     "startLocal": "sudo /home/jason/.nvm/versions/node/v14.18.1/bin/npm start",
-    "sL": "sudo PORT=443 /home/jason/.nvm/versions/node/v14.18.1/bin/node /home/jason/bigger/pattern/client/node_modules/react-scripts/scripts/start.js"
+    "sL": "sudo PORT=443 /home/jason/.nvm/versions/node/v14.18.1/bin/node /home/jason/startupos/client/node_modules/react-scripts/scripts/start.js"
   },
   "eslintConfig": {
     "extends": "react-app"
