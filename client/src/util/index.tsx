@@ -13,6 +13,9 @@ import { postLinkEvent as apiPostLinkEvent } from '../services/api';
  * @desc small helper for pluralizing words for display given a number of items
  */
 export function pluralize(noun: string, count: number) {
+  if(noun[noun.length-1]==='y' && count > 1){
+    noun=noun.slice(0,-1)+'ie';
+  }
   return count === 1 ? noun : `${noun}s`;
 }
 
@@ -84,7 +87,7 @@ export const logEvent = (
 
 export const logSuccess = async (
   { institution, accounts, link_session_id }: PlaidLinkOnSuccessMetadata,
-  userId: number
+  userId: number | null
 ) => {
   logEvent('onSuccess', {
     institution,
@@ -101,7 +104,7 @@ export const logSuccess = async (
 export const logExit = async (
   error: PlaidLinkError | null,
   { institution, status, link_session_id, request_id }: PlaidLinkOnExitMetadata,
-  userId: number
+  userId: number | null
 ) => {
   logEvent(
     'onExit',

@@ -14,7 +14,9 @@ import { AccountType } from '../components/types';
 
 import {
   getAccountsByItem as apiGetAccountsByItem,
-  getAccountsByUser as apiGetAccountsByUser,
+  getAccountsByCompany as apiGetAccountsByCompany,
+  deleteAccountById as apiDeleteAccountById,
+  unDeleteAccountById as apiUnDeleteAccountById
 } from './api';
 
 interface AccountsState {
@@ -28,15 +30,19 @@ type AccountsAction =
       payload: AccountType[];
     }
   | { type: 'DELETE_BY_ITEM'; payload: number }
-  | { type: 'DELETE_BY_USER'; payload: number };
+  | { type: 'DELETE_BY_ID'; payload: number }
+  | { type: 'UNDELETE_BY_ID'; payload: number }
+  | { type: 'DELETE_BY_COMPANY'; payload: number };
 
 interface AccountsContextShape extends AccountsState {
   dispatch: Dispatch<AccountsAction>;
   accountsByItem: { [itemId: number]: AccountType[] };
   deleteAccountsByItemId: (itemId: number) => void;
-  getAccountsByUser: (userId: number) => void;
-  accountsByUser: { [user_id: number]: AccountType[] };
-  deleteAccountsByUserId: (userId: number) => void;
+  getAccountsByCompany: (companyId: number) => void;
+  accountsByCompany: { [company_id: number]: AccountType[] };
+  deleteAccountsByCompanyId: (companyId: number) => void;
+  deleteAccountById: (accountId:number)=>void;
+  unDeleteAccountById: (accountId:number)=>void;
 }
 const AccountsContext = createContext<AccountsContextShape>(
   initialState as AccountsContextShape
@@ -58,11 +64,23 @@ export const AccountsProvider: React.FC<{ children: ReactNode }> = (
     dispatch({ type: 'SUCCESSFUL_GET', payload: payload });
   }, []);
 
+  const deleteAccountById = useCallback(async accountId=>{
+    const {data:payload} = await apiDeleteAccountById(accountId);
+    const id:number = payload[0].id;
+    dispatch({type: 'DELETE_BY_ID', payload:id});
+  },[])
+
+  const unDeleteAccountById = useCallback(async accountId=>{
+    const {data:payload} = await apiUnDeleteAccountById(accountId);
+    const id:number = payload[0].id;
+    dispatch({type: 'UNDELETE_BY_ID', payload:id});
+  },[])
+
   /**
-   * @desc Requests all Accounts that belong to an individual User.
+   * @desc Requests all Accounts that belong to an individual Company.
    */
-  const getAccountsByUser = useCallback(async userId => {
-    const { data: payload } = await apiGetAccountsByUser(userId);
+  const getAccountsByCompany = useCallback(async companyId => {
+    const { data: payload } = await apiGetAccountsByCompany(companyId);
     dispatch({ type: 'SUCCESSFUL_GET', payload: payload });
   }, []);
 
@@ -74,13 +92,7 @@ export const AccountsProvider: React.FC<{ children: ReactNode }> = (
     dispatch({ type: 'DELETE_BY_ITEM', payload: itemId });
   }, []);
 
-  /**
-   * @desc Will delete all accounts that belong to an individual User.
-   * There is no api request as apiDeleteItemById in items delete all related transactions
-   */
-  const deleteAccountsByUserId = useCallback(userId => {
-    dispatch({ type: 'DELETE_BY_USER', payload: userId });
-  }, []);
+  
 
   /**
    * @desc Builds a more accessible state shape from the Accounts data. useMemo will prevent
@@ -93,18 +105,20 @@ export const AccountsProvider: React.FC<{ children: ReactNode }> = (
       allAccounts,
       accountsById,
       accountsByItem: groupBy(allAccounts, 'item_id'),
-      accountsByUser: groupBy(allAccounts, 'user_id'),
+      accountsByCompany: groupBy(allAccounts, 'organization_id'),
       getAccountsByItem,
-      getAccountsByUser,
+      getAccountsByCompany,
       deleteAccountsByItemId,
-      deleteAccountsByUserId,
+      deleteAccountById,
+      unDeleteAccountById
     };
   }, [
     accountsById,
     getAccountsByItem,
-    getAccountsByUser,
+    getAccountsByCompany,
     deleteAccountsByItemId,
-    deleteAccountsByUserId,
+    deleteAccountById,
+    unDeleteAccountById
   ]);
 
   return <AccountsContext.Provider value={value} {...props} />;
@@ -119,20 +133,39 @@ function reducer(state: AccountsState, action: AccountsAction) {
       if (!action.payload.length) {
         return state;
       }
-      return {
+      const newGetState= {
         ...state,
         ...keyBy(action.payload, 'id'),
       };
+      return omitBy(newGetState, (transaction:AccountType) => transaction.deleted);
     case 'DELETE_BY_ITEM':
       return omitBy(
         state,
         transaction => transaction.item_id === action.payload
       );
-    case 'DELETE_BY_USER':
+    case 'DELETE_BY_COMPANY':
       return omitBy(
         state,
-        transaction => transaction.user_id === action.payload
+        transaction => transaction.company_id === action.payload
       );
+      case 'DELETE_BY_ID':
+        console.log(action.payload)
+        console.log(state);
+        const newState = {...state};
+        if(newState[action.payload])
+          newState[action.payload].deleted=true;  
+        return omitBy(
+          newState,
+          transaction => transaction.deleted
+        );
+      case 'UNDELETE_BY_ID':
+        const unDeleteState = {...state};
+        if(unDeleteState[action.payload])
+          unDeleteState[action.payload].deleted=false;  
+        return omitBy(
+          unDeleteState,
+          transaction => transaction.deleted
+        );
     default:
       console.warn('unknown action');
       return state;

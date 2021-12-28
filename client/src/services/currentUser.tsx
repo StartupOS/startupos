@@ -6,6 +6,7 @@ import React, {
   useCallback,
   Dispatch,
 } from 'react';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { getLoginUser as apiGetLoginUser } from './api';
@@ -35,11 +36,14 @@ interface CurrentUserContextShape extends CurrentUserState {
   userState: CurrentUserState;
   setCurrentUser: (username: string) => void;
   getCurrentUser: ()=>void;
+  logout: ()=>void;
   login: (username: string) => void;
 }
 const CurrentUserContext = createContext<CurrentUserContextShape>(
   initialState as CurrentUserContextShape
 );
+
+
 
 /**
  * @desc Maintains the currentUser context state and provides functions to update that state
@@ -48,13 +52,19 @@ export function CurrentUserProvider(props: any) {
   const [userState, dispatch] = useReducer(reducer, initialState);
   const history = useHistory();
 
+  
+
   const getCurrentUser = useCallback(async () =>{
     try {
-      const { data: payload } = await apiGetCurrentUser();
-      console.log(payload[0]);
-    // const { data: payload } = await apiGetLoginUser(username);
-      if (payload != null) {
-        dispatch({ type: 'SUCCESSFUL_GET', payload: payload[0] });
+      const token = localStorage.getItem('token');
+      if(token){
+        const { data: payload } = await apiGetCurrentUser();
+        console.log(payload[0]);
+        if (payload != null) {
+          dispatch({ type: 'SUCCESSFUL_GET', payload: payload[0] });
+        } else {
+          dispatch({ type: 'FAILED_GET' });
+        }
       } else {
         dispatch({ type: 'FAILED_GET' });
       }
@@ -68,13 +78,14 @@ export function CurrentUserProvider(props: any) {
    * @desc Requests details for a single User.
    */
   const login = useCallback(
-    async username => {
+    async user => {
       try {
-        const { data: payload } = await apiGetLoginUser(username);
-        if (payload != null) {
-          toast.success(`Successful login.  Welcome back ${username}`);
-          dispatch({ type: 'SUCCESSFUL_GET', payload: payload[0] });
-          history.push(`/Dashboard}`);
+        const { username } = user;
+        if (user != null) {
+          localStorage.setItem('token', user.token);
+          toast.success(`Successful login.  Welcome back ${user.given_name}`);
+          dispatch({ type: 'SUCCESSFUL_GET', payload: user });
+          history.push(`/Dashboard`);
         } else {
           toast.error(`Username ${username} is invalid.  Try again. `);
           dispatch({ type: 'FAILED_GET' });
@@ -106,6 +117,12 @@ export function CurrentUserProvider(props: any) {
     [history]
   );
 
+  const logout = useCallback(async ()=>{
+    localStorage.removeItem('token');
+    dispatch({ type: 'LOG_OUT', payload: null });
+
+  },[]);
+
   const setNewUser = useCallback(async username => {
     dispatch({ type: 'ADD_USER', payload: username });
   }, []);
@@ -118,11 +135,12 @@ export function CurrentUserProvider(props: any) {
     return {
       userState,
       login,
+      logout,
       setCurrentUser,
       getCurrentUser,
       setNewUser
     };
-  }, [userState, login, setCurrentUser, getCurrentUser, setNewUser]);
+  }, [userState, login, logout, setCurrentUser, getCurrentUser, setNewUser]);
 
   return <CurrentUserContext.Provider value={value} {...props} />;
 }
@@ -148,6 +166,11 @@ function reducer(state: CurrentUserState, action: CurrentUserAction | any) {
         ...state,
         newUser: action.payload,
       };
+    case 'LOG_OUT':
+      return {
+        currentUser:null,
+        newUser: null
+      }
     default:
       console.warn('unknown action: ', action.type, action.payload);
       return state;
@@ -159,7 +182,29 @@ function reducer(state: CurrentUserState, action: CurrentUserAction | any) {
  */
 export default function useCurrentUser() {
   const context = useContext(CurrentUserContext);
-
+  const getCodeFromWindowURL = (url:string) => {
+    const popupWindowURL = new URL(url);
+    const code = popupWindowURL.searchParams.get("code");
+    return code;
+  };
+  
+  const getUserCredentials = async (code:string) => {
+    const NodeServer = {
+        baseURL:"https://jason.startupos.dev/", 
+        getUserCredentials: "users/LinkedInCode"
+    };
+    const res = await axios.get(`${NodeServer.baseURL}${NodeServer.getUserCredentials}?code=${code}`);
+    const user = res.data;
+    localStorage.setItem('user', JSON.stringify(user));
+    context.login(user);
+  };
+  
+  
+  const code = getCodeFromWindowURL( window.location.href );
+  if(code)
+    getUserCredentials(code);
+  
+  
   if (!context) {
     throw new Error(`useUsers must be used within a UsersProvider`);
   }

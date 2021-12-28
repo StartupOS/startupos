@@ -28,6 +28,18 @@ const {
   companyRouter
 } = require('./routes');
 
+const {
+  refreshInstitutions
+} = require('./institutions');
+
+// Runs every 5 minutes
+function refreshWrapper(){
+  refreshInstitutions()
+  setTimeout(refreshWrapper, 5*60*1000)
+}
+
+refreshWrapper();
+
 const app = express();
 
 const { PORT } = process.env;
@@ -84,7 +96,7 @@ let logOnce= true;
 io.on('connection', socket => {
   if(logOnce){
     console.log('SOCKET CONNECTED');
-    console.log(socket);
+    // console.log(socket);
 
     socket.on('disconnect', () => {
       console.log('SOCKET DISCONNECTED');

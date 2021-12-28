@@ -5,7 +5,9 @@ import 'react-toastify/dist/ReactToastify.min.css';
 
 import { 
   CompaniesPage,
-  UserPage, 
+  CompanyReportPage,
+  AccountsPage,
+  SharingPage, 
   Landing2, 
   Sockets, 
   OAuthLink, 
@@ -54,9 +56,11 @@ function App() {
                             <Route exact path="/" component={Landing2} />
                             <Route exact path="/Blank" component={Blank} />
                             <Route exact path="/linked_in_auth" component={Landing2} />
-                            <Route path="/Dashboard" component={UserPage} />
+                            <Route path="/Dashboard" component={CompanyReportPage} />
                             <Route path="/Companies" component={CompaniesPage} />
+                            <Route path="/Accounts" component={AccountsPage} />
                             <Route path="/oauth-link" component={OAuthLink} />
+                            <Route path="/Sharing" component={SharingPage} />
                             <Route path="/admin" component={UserList} />
                           </Switch>
                         </CompaniesProvider>

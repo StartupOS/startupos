@@ -1,0 +1,16 @@
+drop table if exists users_table CASCADE;
+drop view if exists users CASCADE;
+drop table if exists items_table CASCADE;
+drop view if exists items CASCADE;
+drop table if exists assets_table CASCADE;
+drop view if exists assets CASCADE;
+drop table if exists liabilities_table CASCADE;
+drop view if exists liabilities CASCADE;
+drop table if exists accounts_table CASCADE;
+drop view if exists accounts CASCADE;
+drop table if exists transactions_table CASCADE;
+drop view if exists transactions CASCADE;
+drop table if exists link_events_table CASCADE;
+drop table if exists plaid_api_events_table;
+drop table if exists organizations_table cascade;
+drop table if exists organization_memberships cascade;

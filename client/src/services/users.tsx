@@ -39,14 +39,12 @@ const UsersContext = createContext<UsersContextShape>(
   initialState as UsersContextShape
 );
 
+
 /**
  * @desc Maintains the Users context state and provides functions to update that state.
  */
 export function UsersProvider(props: any) {
   const [usersById, dispatch] = useReducer(reducer, {});
-  const { deleteAccountsByUserId } = useAccounts();
-  const { deleteItemsByUserId } = useItems();
-  const { deleteTransactionsByUserId } = useTransactions();
 
   const hasRequested = useRef<{
     all: Boolean;
@@ -105,13 +103,10 @@ export function UsersProvider(props: any) {
   const deleteUserById = useCallback(
     async id => {
       await apiDeleteUserById(id); // this will delete all items associated with user
-      deleteItemsByUserId(id);
-      deleteAccountsByUserId(id);
-      deleteTransactionsByUserId(id);
       dispatch({ type: 'SUCCESSFUL_DELETE', payload: id });
       delete hasRequested.current.byId[id];
     },
-    [deleteItemsByUserId, deleteAccountsByUserId, deleteTransactionsByUserId]
+    []
   );
 
   /**

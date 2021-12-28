@@ -7,7 +7,7 @@ export interface RouteInfo {
 export interface ItemType {
   id: number;
   plaid_item_id: string;
-  user_id: number;
+  company_id: number;
   plaid_access_token: string;
   plaid_institution_id: string;
   status: string;
@@ -18,7 +18,7 @@ export interface ItemType {
 export interface AccountType {
   id: number;
   item_id: number;
-  user_id: number;
+  company_id: number;
   plaid_account_id: string;
   name: string;
   mask: string;
@@ -27,6 +27,8 @@ export interface AccountType {
   available_balance: number;
   iso_currency_code: string;
   unofficial_currency_code: string;
+  logo: LogoType;
+  primary_color: string;
   type: 'depository' | 'investment' | 'loan' | 'credit';
   subtype:
     | 'checking'
@@ -40,12 +42,17 @@ export interface AccountType {
     | 'credit card';
   created_at: string;
   updated_at: string;
+  deleted: boolean;
+}
+interface LogoType {
+  data: Buffer;
+  type: string
 }
 export interface TransactionType {
   id: number;
   account_id: number;
   item_id: number;
-  user_id: number;
+  company_id: number;
   plaid_transaction_id: string;
   plaid_category_id: string;
   category: string;
@@ -64,7 +71,7 @@ export interface TransactionType {
 
 export interface AssetType {
   id: number;
-  user_id: number;
+  company_id: number;
   value: number;
   description: string;
   created_at: string;
@@ -121,12 +128,18 @@ export type CompanyType = {
   id: number;
   name: string;
   ein: string;
-  description: string | null;
-  logo: string | null;
+  description: string;
+  logo?: string;
   street1: string;
-  street2: string | null;
+  street2?: string;
   city: string;
   state: string;
   country: string;
   owner: number;
+  shared?: Number[];
+}
+
+export interface CompanyCardProps extends CompanyType{
+  selected:CompanyType|null;
+  selectCompany:(company:CompanyType|null)=>void;
 }

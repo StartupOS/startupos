@@ -25,7 +25,7 @@ const OAuthLink = () => {
       {token != null && (
         <LinkButton
           isOauth // this will initiate link immediately
-          userId={userId}
+          companyId={userId}
           itemId={itemId}
           token={token}
         />

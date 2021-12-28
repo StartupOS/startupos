@@ -8,7 +8,8 @@ import NumberInput from 'plaid-threads/NumberInput';
 import { useAssets } from '../services';
 
 interface Props {
-  userId: number;
+  companyId: number;
+  canEdit: Boolean;
 }
 
 //  Allows user to input their personal assets such as a house or car.
@@ -22,16 +23,19 @@ export default function Asset(props: Props) {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     setShow(false);
-    addAsset(props.userId, description, parseFloat(value));
+    if(props.canEdit)
+      addAsset(props.companyId, description, parseFloat(value));
     setDescription('');
     setValue('');
   };
 
   return (
     <div className="assetBtnContainer">
-      <Button centered inline small secondary onClick={() => setShow(!show)}>
-        Add An Asset
-      </Button>
+      {props.canEdit && (
+        <Button centered inline small secondary onClick={() => setShow(!show)}>
+          Add An Asset
+        </Button>
+      )}
       <Modal isOpen={show} onRequestClose={() => setShow(false)}>
         <>
           <ModalBody

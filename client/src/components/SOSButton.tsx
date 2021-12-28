@@ -8,7 +8,7 @@ export default function SOSButton(){
             className="SOS_Button"
             size="medium"
         >
-            <img src="/lifePreserver.png" className="SOS_icon" />
+            <img src="/lifePreserver.png" className="SOS_icon" alt="Life Preserver" />
             SOS
         </Button>
     );

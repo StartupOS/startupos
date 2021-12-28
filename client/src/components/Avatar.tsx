@@ -8,7 +8,7 @@ import { blue } from '@mui/material/colors';
 import {LinkedIn} from '.';
 
 export default function SOSAvatar(props:any){
-    const { userState, getCurrentUser } = useCurrentUser();
+    const { userState, getCurrentUser, logout } = useCurrentUser();
     console.log(userState)
     useEffect(() => {
         getCurrentUser();
@@ -29,7 +29,8 @@ export default function SOSAvatar(props:any){
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
-    if(userState.currentUser.email){
+    if(userState && userState.currentUser && userState.currentUser.username){
+        console.log(userState.currentUser);
         return (
             <div className="Avatar">
                 <Button onClick={onClick}>
@@ -55,7 +56,9 @@ export default function SOSAvatar(props:any){
                 >
                     <Link to="/Companies">
                         Companies 
-                    </Link> 
+                    </Link>
+                    <br />
+                    <Button onClick={ logout }> Logout </Button>
                 </Popover>
             </div>
         )

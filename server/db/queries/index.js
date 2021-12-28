@@ -1,12 +1,16 @@
 /**
  * @file Exports the queries for interacting with the database.
  */
-
+const {
+  listUsedInstitutions,
+  updateInstitution
+} = require('./institutions');
 const {
   createAccounts,
   retrieveAccountByPlaidAccountId,
   retrieveAccountsByItemId,
-  retrieveAccountsByUserId,
+  unDeleteAccountById,
+  deleteAccountById
 } = require('./accounts');
 const {
   createItem,
@@ -15,7 +19,6 @@ const {
   retrieveItemByPlaidAccessToken,
   retrieveItemByPlaidInstitutionId,
   retrieveItemByPlaidItemId,
-  retrieveItemsByUser,
   updateItemStatus,
 } = require('./items');
 const { createPlaidApiEvent } = require('./plaidApiEvents');
@@ -23,7 +26,6 @@ const {
   createTransactions,
   retrieveTransactionsByAccountId,
   retrieveTransactionsByItemId,
-  retrieveTransactionsByUserId,
   retrieveTransactionsInDateRange,
   deleteTransactions,
 } = require('./transactions');
@@ -38,7 +40,7 @@ const { createLinkEvent } = require('./linkEvents');
 
 const {
   createAsset,
-  retrieveAssetsByUser,
+  retrieveAssetsByCompany,
   deleteAssetByAssetId,
 } = require('./assets');
 
@@ -47,7 +49,12 @@ const {
   listCompanies,
   retrieveCompany,
   updateCompany,
-  deleteCompany
+  deleteCompany,
+  retrieveTransactionsByCompanyId,
+  retrieveItemsByCompany,
+  retrieveAccountsByCompanyId,
+  updateSharing,
+  getOwnedOrg
 } = require('./companies');
 
 module.exports = {
@@ -55,7 +62,8 @@ module.exports = {
   createAccounts,
   retrieveAccountByPlaidAccountId,
   retrieveAccountsByItemId,
-  retrieveAccountsByUserId,
+  deleteAccountById,
+  unDeleteAccountById,
   // items
   createItem,
   deleteItem,
@@ -63,7 +71,6 @@ module.exports = {
   retrieveItemByPlaidAccessToken,
   retrieveItemByPlaidInstitutionId,
   retrieveItemByPlaidItemId,
-  retrieveItemsByUser,
   updateItemStatus,
   // plaid api events
   createPlaidApiEvent,
@@ -71,7 +78,6 @@ module.exports = {
   createTransactions,
   retrieveTransactionsByAccountId,
   retrieveTransactionsByItemId,
-  retrieveTransactionsByUserId,
   retrieveTransactionsInDateRange,
   deleteTransactions,
   // users
@@ -82,7 +88,7 @@ module.exports = {
   retrieveUsers,
   // assets
   createAsset,
-  retrieveAssetsByUser,
+  retrieveAssetsByCompany,
   deleteAssetByAssetId,
   // link events
   createLinkEvent,
@@ -92,4 +98,12 @@ module.exports = {
   retrieveCompany,
   updateCompany,
   deleteCompany,
+  retrieveTransactionsByCompanyId,
+  retrieveItemsByCompany,
+  retrieveAccountsByCompanyId,
+  updateSharing,
+  getOwnedOrg,
+  // institutions
+  listUsedInstitutions,
+  updateInstitution
 };

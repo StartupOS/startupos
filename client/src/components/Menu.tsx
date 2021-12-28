@@ -4,6 +4,11 @@ import { Link } from "react-router-dom";
 
 import {Avatar, Alerts, SOSButton} from '.';
 import { useCurrentUser } from '../services';
+import { useCompanies } from '../services';
+import { CompanyType } from './types';
+import DomainDisabledIcon from '@mui/icons-material/DomainDisabled';
+
+
 
 type User = {
   given_name: string
@@ -12,100 +17,54 @@ type User = {
   picture: string
 }
 
+
+
 export default function Menu(){
   const { userState, getCurrentUser, setCurrentUser } = useCurrentUser();
-
+  const { companiesByUser, getCompany, listCompanies } = useCompanies();
+  const [ currentCompany, setCurrentCompany ] = useState<CompanyType|null>(null);
   useEffect(() => {
     getCurrentUser();
   }, [getCurrentUser]);
 
-  const getCodeFromWindowURL = (url:string) => {
-      const popupWindowURL = new URL(url);
-      const code = popupWindowURL.searchParams.get("code");
-      return code;
-  };
-
-  const showPopup = () => {
-      console.log('showing popup');
-      const LinkedInApi = {
-          clientId: process.env.REACT_APP_LINKEDIN_CLIENT_ID,
-          redirectUrl: process.env.REACT_APP_LINKEDIN_OAUTH_REDIRECT,
-          state: process.env.REACT_APP_LINKEDIN_STATE,
-          oauthUrl: process.env.REACT_APP_LINKEDIN_OAUTH_URL,
-          scope: process.env.REACT_APP_LINKEDIN_SCOPE
-      }
-      const { clientId, redirectUrl, oauthUrl, scope, state } = LinkedInApi;
-      const windowUrl = `${oauthUrl}&client_id=${clientId}&scope=${scope}&state=${state}&redirect_uri=${redirectUrl}`;
-      const width = 450,
-        height = 730,
-        left = window.screen.width / 2 - width / 2,
-        top = window.screen.height / 2 - height / 2;
-      window.open(
-        windowUrl,
-        'Linkedin',
-        'menubar=no,location=no,resizable=no,scrollbars=no,status=no, width=' +
-        width +
-        ', height=' +
-        height +
-        ', top=' +
-        top +
-        ', left=' +
-        left
-      );
-    };
-
-  const getUserCredentials = async (code:string) => {
-      console.log('getting credentials');
-      const NodeServer = {
-          baseURL:"https://jason.startupos.dev/", 
-          getUserCredentials: "users/LinkedInCode"
-      };
-      console.log('getting credentials');
-      const res = await axios.get(`${NodeServer.baseURL}${NodeServer.getUserCredentials}?code=${code}`);
-      console.log(res);
-      const user = res.data;
-      console.log(user);
-      setCurrentUser(user.email);
-      localStorage.setItem('token', user.token);
-    };
-
-  const handlePostMessage = (event:any) => {
-      if (event.data.type === 'code') {
-          const { code } = event.data;
-          console.log(code);
-          getUserCredentials(code);
-      }
-  };
-    const currentURL = new URL(window.location.href);
-    console.log(currentURL);
-    if (window.opener && window.opener !== window ) {
-        console.log('different window');
-        const code = getCodeFromWindowURL( window.location.href );
-        window.opener.postMessage({'type': 'code', 'code': code}, '*')
-        window.close();
-    }
-    // } else if(currentURL.pathname == '/linked_in_auth'){
-    //   const code = getCodeFromWindowURL( window.location.href );
-    //   if(code !== null){
-    //     getUserCredentials(code);
-    //   }
-    // } 
-    window.addEventListener('message', handlePostMessage);
+  useEffect(()=>{
+    setCurrentCompany(companiesByUser.currentCompany);
+  },[companiesByUser, listCompanies, getCompany])
+    
   console.log(userState);
     return(
         <div className="SOS_Menu">
+            { currentCompany && (
+            <>
+              {currentCompany.logo ?  
+                <img src={currentCompany.logo} alt="Your Company Logo" /> : 
+                <DomainDisabledIcon sx={{ fontSize: "5em" }} />
+              }
+              <span className="Menu_CompanyName">{currentCompany.name}</span>
+            </>
+            )}
+            { !currentCompany && (
+              <Link to="/Companies">
+                <DomainDisabledIcon sx={{ fontSize: "5em" }} />
+                <span className="Menu_CompanyName">Select a Company</span>
+              </Link>
+            )}  
+            
+            <span className="Menu_Spacer-large"></span>
             <Link to="/Dashboard">
               Dashboard 
             </Link> 
+            <span className="Menu_Spacer-small"></span>
             <Link to="/Accounts">
               Accounts 
             </Link> 
-            <Link to="/Reporting">
+            <span className="Menu_Spacer-small"></span>
+            <Link to="/Sharing">
               Reporting 
             </Link> 
             
             <Alerts />
-            <Avatar showPopup={showPopup}/>
+            <Avatar />
             <SOSButton />
             
         </div>

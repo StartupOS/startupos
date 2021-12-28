@@ -5,7 +5,7 @@ import NavigationLink from 'plaid-threads/NavigationLink';
 import LoadingSpinner from 'plaid-threads/LoadingSpinner';
 import Callout from 'plaid-threads/Callout';
 
-import { RouteInfo, ItemType, AccountType, AssetType } from './types';
+import { RouteInfo, ItemType, AccountType, AssetType, CompanyType } from './types';
 import {
   useItems,
   useAccounts,
@@ -13,7 +13,8 @@ import {
   useUsers,
   useAssets,
   useLink,
-  useCurrentUser
+  useCurrentUser,
+  useCompanies
 } from '../services';
 
 import { pluralize } from '../util';
@@ -32,112 +33,116 @@ import {
 // provides view of user's net worth, spending by category and allows them to explore
 // account and transactions details for linked items
 
-const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
+const CompanyReportPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { userState } = useCurrentUser();
-  const user=userState.currentUser.id ? userState.currentUser : {
-    id: 0,
-    username: '',
-    created_at: '',
-    updated_at: '',
-    given_name: '',
-    family_name:'',
-    email: '',
-    picture:'',
-    token:null
-  };
+  const { companiesByUser, getCompany, listCompanies } = useCompanies();
+  const { getTransactionsByCompany, transactionsByCompany } = useTransactions();
+  const { getAccountsByCompany, accountsByCompany } = useAccounts();
+  const { assetsByCompany, getAssetsByCompany } = useAssets();
+  const { itemsByCompany, getItemsByCompany } = useItems();
+  const { generateLinkToken, linkTokens } = useLink();
+
+  const [ currentCompany, setCurrentCompany ] = useState<CompanyType|null>(null);
+  const [companyId, setCompanyId] = useState(0);
   const [items, setItems] = useState<ItemType[]>([]);
   const [token, setToken] = useState('');
   const [numOfItems, setNumOfItems] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState<AccountType[]>([]);
   const [assets, setAssets] = useState<AssetType[]>([]);
+  const [userId, setUserId] = useState(0);
 
-  const { getTransactionsByUser, transactionsByUser } = useTransactions();
-  const { getAccountsByUser, accountsByUser } = useAccounts();
-  const { assetsByUser, getAssetsByUser } = useAssets();
-  const { usersById, getUserById } = useUsers();
-  const { itemsByUser, getItemsByUser } = useItems();
-  // const userId = Number(match.params.userId);
-  const { generateLinkToken, linkTokens } = useLink();
-  const userId=userState.currentUser.id
+  useEffect(()=>{
+    if(companiesByUser.currentCompany){
+      setCurrentCompany(companiesByUser.currentCompany);
+      if(companiesByUser.currentCompany.id){
+        setCompanyId(companiesByUser.currentCompany.id)
+      }
+    }
+  },[companiesByUser, listCompanies, getCompany])
+  
+  useEffect(()=>{
+    if(userState.currentUser){
+      setUserId(userState.currentUser.id);
+    }
+  },[userState])
 
   useEffect(() => {
     // This gets transactions from the database only.
     // Note that calls to Plaid's transactions/get endpoint are only made in response
     // to receipt of a transactions webhook.
-    if(userId)
-      getTransactionsByUser(userId);
-  }, [getTransactionsByUser, userId]);
+    if(companyId)
+      getTransactionsByCompany(companyId);
+  }, [getTransactionsByCompany, companyId]);
 
   useEffect(() => {
-    if(userId)
-      setTransactions(transactionsByUser[userId] || []);
-  }, [transactionsByUser, userId]);
+    if(companyId)
+      setTransactions(transactionsByCompany[companyId] || []);
+  }, [transactionsByCompany, companyId]);
 
   // update data store with the user's assets
   useEffect(() => {
-    if(userId)
-      getAssetsByUser(userId);
-  }, [getAssetsByUser, userId]);
+    if(companyId)
+      getAssetsByCompany(companyId);
+  }, [getAssetsByCompany, companyId]);
 
   useEffect(() => {
-    if(userId)
-      setAssets(assetsByUser.assets || []);
-  }, [assetsByUser, userId]);
+    if(companyId)
+      setAssets(assetsByCompany.assets || []);
+  }, [assetsByCompany, companyId]);
 
   // update data store with the user's items
   useEffect(() => {
-    if (userId != null) {
-      getItemsByUser(userId, true);
+    if (companyId) {
+      getItemsByCompany(companyId, true);
     }
-  }, [getItemsByUser, userId]);
+  }, [getItemsByCompany, companyId]);
 
   // update state items from data store
   useEffect(() => {
-    const newItems: Array<ItemType> = itemsByUser[userId] || [];
+    const newItems: Array<ItemType> = itemsByCompany[companyId] || [];
     const orderedItems = sortBy(
       newItems,
       item => new Date(item.updated_at)
     ).reverse();
     setItems(orderedItems);
-  }, [itemsByUser, userId]);
+  }, [itemsByCompany, companyId]);
 
   // update no of items from data store
   useEffect(() => {
-    if (itemsByUser[userId] != null) {
-      setNumOfItems(itemsByUser[userId].length);
+    if (itemsByCompany[companyId] != null) {
+      setNumOfItems(itemsByCompany[companyId].length);
     } else {
       setNumOfItems(0);
     }
-  }, [itemsByUser, userId]);
+  }, [itemsByCompany, companyId]);
 
   // update data store with the user's accounts
   useEffect(() => {
-    getAccountsByUser(userId);
-  }, [getAccountsByUser, userId]);
+    getAccountsByCompany(companyId);
+  }, [getAccountsByCompany, companyId]);
 
   useEffect(() => {
-    setAccounts(accountsByUser[userId] || []);
-  }, [accountsByUser, userId]);
+    setAccounts(accountsByCompany[companyId] || []);
+  }, [accountsByCompany, companyId]);
 
   // creates new link token upon new user or change in number of items
   useEffect(() => {
-    if (userId != null) {
-      generateLinkToken(userId, null); // itemId is null
+    if (companyId != null) {
+      generateLinkToken(companyId, null); // itemId is null
     }
-  }, [userId, numOfItems, generateLinkToken]);
+  }, [companyId, numOfItems, generateLinkToken]);
 
   useEffect(() => {
-    setToken(linkTokens.byUser[userId]);
-  }, [linkTokens, userId, numOfItems]);
+    setToken(linkTokens.byCompany[companyId]);
+  }, [linkTokens, companyId, numOfItems]);
 
   document.getElementsByTagName('body')[0].style.overflow = 'auto'; // to override overflow:hidden from link pane
+  
+  const canLink = !!(currentCompany && (userId == currentCompany.owner) && token && token.length);
+
   return (
     <div>
-      <NavigationLink component={Link} to="/">
-        BACK TO LOGIN
-      </NavigationLink>
-
       <Banner />
       {linkTokens.error.error_code != null && (
         <Callout warning>
@@ -154,8 +159,14 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
           <div>Error Message: {linkTokens.error.error_message}</div>
         </Callout>
       )}
-      <UserCard user={user} userId={userId} removeButton={false} linkButton />
+      
       {numOfItems === 0 && <ErrorMessage />}
+      {numOfItems === 0 && canLink && currentCompany && (
+        // Link will not render unless there is a link token
+        <LinkButton token={token} companyId={currentCompany.id} itemId={null}>
+          Add Another Bank
+        </LinkButton>
+      )}
       {numOfItems > 0 && transactions.length === 0 && (
         <div className="loading">
           <LoadingSpinner />
@@ -168,8 +179,9 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
             accounts={accounts}
             numOfItems={numOfItems}
             personalAssets={assets}
-            userId={userId}
+            companyId={companyId}
             assetsOnly={false}
+            canEdit={canLink}
           />
           <SpendingInsights
             numOfItems={numOfItems}
@@ -183,8 +195,9 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
             accounts={accounts}
             numOfItems={numOfItems}
             personalAssets={assets}
-            userId={userId}
+            companyId={companyId}
             assetsOnly
+            canEdit={canLink}
           />
         </>
       )}
@@ -202,9 +215,9 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                 </p>
               )}
             </div>
-            {token != null && token.length > 0 && (
+            {canLink && currentCompany && (
               // Link will not render unless there is a link token
-              <LinkButton token={token} userId={userId} itemId={null}>
+              <LinkButton token={token} companyId={currentCompany.id} itemId={null}>
                 Add Another Bank
               </LinkButton>
             )}
@@ -212,7 +225,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
           <ErrorMessage />
           {items.map(item => (
             <div id="itemCards" key={item.id}>
-              <ItemCard item={item} userId={userId} />
+              <ItemCard item={item} userId={userId} canEdit={canLink} />
             </div>
           ))}
         </>
@@ -221,4 +234,4 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   );
 };
 
-export default UserPage;
+export default CompanyReportPage;

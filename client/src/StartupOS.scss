@@ -29,7 +29,7 @@ div.CompanyCard{
     margin: 10px;
     cursor: pointer;
 }
-div.CompanyCard:hover{
+div.CompanyCard:hover, div.CompanyCard.selected{
     background-color: $color-action-hover;
     color:$white;
 }
@@ -46,4 +46,25 @@ div.CompanyCard div.CompanyName{
     float:left;
     font-weight: bolder;
     font-size: larger;
+}
+.Menu_Spacer-large{
+    width:10em;
+    display:inline-block;
+}
+.Menu_Spacer-small{
+    width:2em;
+    display:inline-block;
+}
+
+img.AccountLogo {
+    height: 3em;
+}
+.account-data-row{
+    grid-template-columns: 4em 3fr 2fr !important;
+}
+.accountCards{
+    margin: 1em;
+}
+#accountsWrapper{
+    margin: 1em;
 }

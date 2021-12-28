@@ -26,7 +26,7 @@ const createItem = async (
     // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
     text: `
       INSERT INTO items_table
-        (user_id, plaid_access_token, plaid_item_id, plaid_institution_id, status)
+        (organization_id, plaid_access_token, plaid_item_id, plaid_institution_id, status)
       VALUES
         ($1, $2, $3, $4, $5)
       RETURNING
@@ -80,7 +80,7 @@ const retrieveItemByPlaidAccessToken = async accessToken => {
 const retrieveItemByPlaidInstitutionId = async (plaidInstitutionId, userId) => {
   const query = {
     text:
-      'SELECT * FROM items WHERE plaid_institution_id = $1 AND user_id = $2',
+      'SELECT * FROM items WHERE plaid_institution_id = $1 AND organization_id = $2',
     values: [plaidInstitutionId, userId],
   };
   const { rows: existingItems } = await db.query(query);
@@ -111,7 +111,7 @@ const retrieveItemByPlaidItemId = async plaidItemId => {
  */
 const retrieveItemsByUser = async userId => {
   const query = {
-    text: 'SELECT * FROM items WHERE user_id = $1',
+    text: 'SELECT * FROM items WHERE organization_id = $1',
     values: [userId],
   };
   const { rows: items } = await db.query(query);

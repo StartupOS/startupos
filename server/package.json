@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@hapi/boom": "^7.4.2",
+    "@mergeapi/merge_hris_api": "^1.0.10",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.16.0",

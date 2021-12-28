@@ -12,6 +12,7 @@ const {
   createItem,
   deleteItem,
   updateItemStatus,
+  retrieveCompany,
 } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
 const plaid = require('../plaid');
@@ -36,11 +37,23 @@ const router = express.Router();
 router.post(
   '/',
   asyncWrapper(async (req, res) => {
-    const { publicToken, institutionId, userId } = req.body;
+    const user = await req.user;
+    const userId = user.id
+    const { publicToken, institutionId, userId:organizationId} = req.body;
+    
+    // Ensure user has permission to create Links (is owner of org and org exists)
+    const targetCompany = await retrieveCompany({userId, companyId:organizationId});
+    console.log(targetCompany);
+    if(!targetCompany){
+      throw new Boom('Unauthorized Request', {
+        statusCode: 401
+      })
+    }
+
     // prevent duplicate items for the same institution per user.
     const existingItem = await retrieveItemByPlaidInstitutionId(
       institutionId,
-      userId
+      organizationId
     );
     if (existingItem)
       throw new Boom('You have already linked an item at this institution.', {
@@ -57,7 +70,7 @@ router.post(
       institutionId,
       accessToken,
       itemId,
-      userId
+      organizationId
     );
     res.json(sanitizeItems(newItem));
   })

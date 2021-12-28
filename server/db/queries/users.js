@@ -91,6 +91,9 @@ const retrieveUserById = async userId => {
  */
 const retrieveUserByUsername = async username => {
   console.log('in retrieve user by name');
+  if(!username){
+    throw new Error('Username cannot be undefined');
+  }
   const query = {
     text: 'SELECT * FROM users WHERE username = $1',
     values: [username],

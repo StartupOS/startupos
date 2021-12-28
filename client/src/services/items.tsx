@@ -15,7 +15,7 @@ import omitBy from 'lodash/omitBy';
 import { ItemType } from '../components/types';
 
 import {
-  getItemsByUser as apiGetItemsByUser,
+  getItemsByCompany as apiGetItemsByCompany,
   getItemById as apiGetItemById,
   deleteItemById as apiDeleteItemById,
 } from './api';
@@ -31,16 +31,16 @@ type ItemsAction =
       payload: ItemType[];
     }
   | { type: 'SUCCESSFUL_DELETE'; payload: number }
-  | { type: 'DELETE_BY_USER'; payload: number };
+  | { type: 'DELETE_BY_COMPANY'; payload: number };
 
 interface ItemsContextShape extends ItemsState {
   dispatch: Dispatch<ItemsAction>;
-  deleteItemById: (id: number, userId: number) => void;
-  getItemsByUser: (userId: number, refresh: boolean) => void;
+  deleteItemById: (id: number, companyId: number) => void;
+  getItemsByCompany: (companyId: number, refresh: boolean) => void;
   getItemById: (id: number, refresh: boolean) => void;
   itemsById: { [itemId: number]: ItemType[] };
-  itemsByUser: { [userId: number]: ItemType[] };
-  deleteItemsByUserId: (userId: number) => void;
+  itemsByCompany: { [companyId: number]: ItemType[] };
+  deleteItemsByCompanyId: (companyId: number) => void;
 }
 const ItemsContext = createContext<ItemsContextShape>(
   initialState as ItemsContextShape
@@ -71,8 +71,8 @@ export function ItemsProvider(props: any) {
   /**
    * @desc Requests all Items that belong to an individual User.
    */
-  const getItemsByUser = useCallback(async userId => {
-    const { data: payload } = await apiGetItemsByUser(userId);
+  const getItemsByCompany = useCallback(async companyId => {
+    const { data: payload } = await apiGetItemsByCompany(companyId);
     dispatch({ type: 'SUCCESSFUL_REQUEST', payload: payload });
   }, []);
 
@@ -80,23 +80,23 @@ export function ItemsProvider(props: any) {
    * @desc Will deletes Item by itemId.
    */
   const deleteItemById = useCallback(
-    async (id, userId) => {
+    async (id, companyId) => {
       await apiDeleteItemById(id);
       dispatch({ type: 'SUCCESSFUL_DELETE', payload: id });
       // Update items list after deletion.
-      await getItemsByUser(userId);
+      await getItemsByCompany(companyId);
 
       delete hasRequested.current.byId[id];
     },
-    [getItemsByUser]
+    [getItemsByCompany]
   );
 
   /**
    * @desc Will delete all items that belong to an individual User.
    * There is no api request as apiDeleteItemById in items delete all related transactions
    */
-  const deleteItemsByUserId = useCallback(userId => {
-    dispatch({ type: 'DELETE_BY_USER', payload: userId });
+  const deleteItemsByCompanyId = useCallback(companyId => {
+    dispatch({ type: 'DELETE_BY_COMPANY', payload: companyId });
   }, []);
 
   /**
@@ -109,18 +109,18 @@ export function ItemsProvider(props: any) {
     return {
       allItems,
       itemsById,
-      itemsByUser: groupBy(allItems, 'user_id'),
+      itemsByCompany: groupBy(allItems, 'organization_id'),
       getItemById,
-      getItemsByUser,
+      getItemsByCompany,
       deleteItemById,
-      deleteItemsByUserId,
+      deleteItemsByCompanyId,
     };
   }, [
     itemsById,
     getItemById,
-    getItemsByUser,
+    getItemsByCompany,
     deleteItemById,
-    deleteItemsByUserId,
+    deleteItemsByCompanyId,
   ]);
 
   return <ItemsContext.Provider value={value} {...props} />;
@@ -139,8 +139,8 @@ function reducer(state: ItemsState, action: ItemsAction) {
       return { ...state, ...keyBy(action.payload, 'id') };
     case 'SUCCESSFUL_DELETE':
       return omit(state, [action.payload]);
-    case 'DELETE_BY_USER':
-      return omitBy(state, items => items.user_id === action.payload);
+    case 'DELETE_BY_COMPANY':
+      return omitBy(state, items => items.company_id === action.payload);
     default:
       console.warn('unknown action');
       return state;

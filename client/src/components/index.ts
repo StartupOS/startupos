@@ -27,6 +27,9 @@ export { default as SOSButton} from './SOSButton';
 export { default as Alerts} from './Alerts';
 export { default as Blank} from './Blank';
 export { default as CompaniesPage} from './CompaniesPage';
+export { default as CompanyReportPage} from './CompanyReportPage';
 export { default as CompaniesCard} from './CompaniesCard';
 export { default as AddCompanyForm} from './AddCompanyForm';
+export { default as SharingPage} from './Sharing';
+export { default as AccountsPage} from './AccountsPage';
 
