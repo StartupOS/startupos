@@ -34,8 +34,8 @@ router.post(
   '/me',
   asyncWrapper(async (req, res) => {
     // const user = req.body;
-    let user = await req.user;
     console.log('POST /me');
+    let user = await req.user;
     console.log(user);
     try{
       if (user != null) {

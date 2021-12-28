@@ -23,5 +23,13 @@ export { default as ErrorMessage } from './ErrorMessage';
 export { default as Menu } from './Menu';
 export { default as LinkedIn} from './LinkedIn';
 export { default as Avatar} from './Avatar';
+export { default as SOSButton} from './SOSButton';
 export { default as Alerts} from './Alerts';
 export { default as Blank} from './Blank';
+export { default as CompaniesPage} from './CompaniesPage';
+export { default as CompanyReportPage} from './CompanyReportPage';
+export { default as CompaniesCard} from './CompaniesCard';
+export { default as AddCompanyForm} from './AddCompanyForm';
+export { default as SharingPage} from './Sharing';
+export { default as AccountsPage} from './AccountsPage';
+

@@ -8,3 +8,5 @@ export { default as useTransactions } from './transactions';
 export { default as useInstitutions } from './institutions';
 export { default as useAssets } from './assets';
 export { default as useErrors } from './errors';
+export { default as useCompanies } from './companies';
+

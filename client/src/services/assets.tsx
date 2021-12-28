@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { toast } from 'react-toastify';
 import { addAsset as apiAddAsset } from './api';
-import { getAssetsByUser as apiGetAssetsByUser } from './api';
+import { getAssetsByCompany as apiGetAssetsByCompany } from './api';
 import { deleteAssetByAssetId as apiDeleteAssetByAssetId } from './api';
 import { AssetType } from '../components/types';
 
@@ -27,10 +27,10 @@ type AssetsAction =
 
 interface AssetsContextShape extends AssetsState {
   dispatch: Dispatch<AssetsAction>;
-  addAsset: (userId: number, description: string, value: number) => void;
-  assetsByUser: AssetsState;
-  getAssetsByUser: (userId: number) => void;
-  deleteAssetByAssetId: (assetId: number, userId: number) => void;
+  addAsset: (companyId: number, description: string, value: number) => void;
+  assetsByCompany: AssetsState;
+  getAssetsByCompany: (companyId: number) => void;
+  deleteAssetByAssetId: (assetId: number, companyId: number) => void;
 }
 const AssetsContext = createContext<AssetsContextShape>(
   initialState as AssetsContextShape
@@ -40,11 +40,11 @@ const AssetsContext = createContext<AssetsContextShape>(
  * @desc Maintains the Properties context state
  */
 export function AssetsProvider(props: any) {
-  const [assetsByUser, dispatch] = useReducer(reducer, initialState);
+  const [assetsByCompany, dispatch] = useReducer(reducer, initialState);
 
-  const getAssetsByUser = useCallback(async (userId: number) => {
+  const getAssetsByCompany = useCallback(async (companyId: number) => {
     try {
-      const { data: payload } = await apiGetAssetsByUser(userId);
+      const { data: payload } = await apiGetAssetsByCompany(companyId);
       if (payload != null) {
         dispatch({ type: 'SUCCESSFUL_GET', payload: payload });
       } else {
@@ -56,12 +56,12 @@ export function AssetsProvider(props: any) {
   }, []);
 
   const addAsset = useCallback(
-    async (userId, description, value, refresh) => {
+    async (companyId, description, value, refresh) => {
       try {
-        const { data: payload } = await apiAddAsset(userId, description, value);
+        const { data: payload } = await apiAddAsset(companyId, description, value);
         if (payload != null) {
           toast.success(`Successful addition of ${description}`);
-          await getAssetsByUser(userId);
+          await getAssetsByCompany(companyId);
         } else {
           toast.error(`Could not add ${description}`);
         }
@@ -69,28 +69,28 @@ export function AssetsProvider(props: any) {
         console.log(err);
       }
     },
-    [getAssetsByUser]
+    [getAssetsByCompany]
   );
 
   const deleteAssetByAssetId = useCallback(
-    async (assetId, userId) => {
+    async (assetId, companyId) => {
       try {
         await apiDeleteAssetByAssetId(assetId);
-        await getAssetsByUser(userId);
+        await getAssetsByCompany(companyId);
       } catch (err) {
         console.log(err);
       }
     },
-    [getAssetsByUser]
+    [getAssetsByCompany]
   );
   const value = useMemo(() => {
     return {
-      assetsByUser,
+      assetsByCompany,
       addAsset,
-      getAssetsByUser,
+      getAssetsByCompany,
       deleteAssetByAssetId,
     };
-  }, [assetsByUser, addAsset, getAssetsByUser, deleteAssetByAssetId]);
+  }, [assetsByCompany, addAsset, getAssetsByCompany, deleteAssetByAssetId]);
 
   return <AssetsContext.Provider value={value} {...props} />;
 }

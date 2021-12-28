@@ -1,0 +1,70 @@
+@import '~plaid-threads/scss/variables';
+
+div.Avatar {
+    float: right;
+}
+.SOS_Button{
+    float: right;
+    margin-right: 10em !important;
+}
+.SOS_icon{
+    height:4rem;
+}
+
+.SOS_Menu{
+    display: block;
+    height: 5em;
+}
+.Notifications{
+    float:right;
+    font-size: xx-large;
+}
+
+div.CompanyCard{
+    width: fit-content;
+    border: 1px solid black;
+    padding: 5px;
+    padding-right: 10px;
+    border-radius: 10px;
+    margin: 10px;
+    cursor: pointer;
+}
+div.CompanyCard:hover, div.CompanyCard.selected{
+    background-color: $color-action-hover;
+    color:$white;
+}
+
+div.CompanyCard div.CompanyLogo{
+    float:left;
+    margin-right:5px;
+}
+div.CompanyCard div.CompanyLogo>img{
+    height:5em;
+}
+
+div.CompanyCard div.CompanyName{
+    float:left;
+    font-weight: bolder;
+    font-size: larger;
+}
+.Menu_Spacer-large{
+    width:10em;
+    display:inline-block;
+}
+.Menu_Spacer-small{
+    width:2em;
+    display:inline-block;
+}
+
+img.AccountLogo {
+    height: 3em;
+}
+.account-data-row{
+    grid-template-columns: 4em 3fr 2fr !important;
+}
+.accountCards{
+    margin: 1em;
+}
+#accountsWrapper{
+    margin: 1em;
+}

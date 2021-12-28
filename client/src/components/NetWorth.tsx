@@ -10,8 +10,9 @@ interface Props {
   numOfItems: number;
   accounts: AccountType[];
   personalAssets: AssetType[];
-  userId: number;
+  companyId: number;
   assetsOnly: boolean;
+  canEdit: boolean
 }
 
 export default function NetWorth(props: Props) {
@@ -21,7 +22,7 @@ export default function NetWorth(props: Props) {
     accountSubtypes: Array<AccountType['subtype']>
   ): number =>
     props.accounts
-      .filter(a => accountSubtypes.includes(a.subtype))
+      .filter(a => accountSubtypes.includes(a.subtype) && !a.deleted)
       .reduce((acc: number, val: AccountType) => acc + val.current_balance, 0);
 
   const depository: number = addAllAccounts([
@@ -41,8 +42,8 @@ export default function NetWorth(props: Props) {
   const assets = depository + investment + personalAssetValue;
   const liabilities = loan + credit;
 
-  const handleDelete = (assetId: number, userId: number) => {
-    deleteAssetByAssetId(assetId, userId);
+  const handleDelete = (assetId: number, companyId: number) => {
+    deleteAssetByAssetId(assetId, companyId);
   };
 
   return (
@@ -64,7 +65,7 @@ export default function NetWorth(props: Props) {
               <div className="holdingsList">
                 <div className="assetsHeaderContainer">
                   <h4 className="dollarsHeading">{currencyFilter(assets)}</h4>
-                  <Asset userId={props.userId} />
+                  <Asset companyId={props.companyId} canEdit={props.canEdit}/>
                 </div>
 
                 <div className="data">
@@ -89,7 +90,7 @@ export default function NetWorth(props: Props) {
                           accessibilityLabel="Navigation"
                           icon={<Trash />}
                           onClick={() => {
-                            handleDelete(asset.id, props.userId);
+                            handleDelete(asset.id, props.companyId);
                           }}
                         />
                       </p>
@@ -131,7 +132,7 @@ export default function NetWorth(props: Props) {
               <div className="holdingsList">
                 <div className="assetsHeaderContainer">
                   <h4 className="dollarsHeading">{currencyFilter(assets)}</h4>
-                  <Asset userId={props.userId} />
+                  <Asset companyId={props.companyId} canEdit={props.canEdit} />
                 </div>
                 <div className="data">
                   <p className="title">Assets</p>
@@ -146,7 +147,7 @@ export default function NetWorth(props: Props) {
                           accessibilityLabel="Navigation"
                           icon={<Trash />}
                           onClick={() => {
-                            handleDelete(asset.id, props.userId);
+                            handleDelete(asset.id, props.companyId);
                           }}
                         />
                       </p>

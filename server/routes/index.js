@@ -12,6 +12,8 @@ const linkEventsRouter = require('./linkEvents');
 const unhandledRouter = require('./unhandled');
 const linkTokensRouter = require('./linkTokens');
 const assetsRouter = require('./assets');
+const companyRouter = require('./companies');
+
 
 module.exports = {
   usersRouter,
@@ -24,4 +26,5 @@ module.exports = {
   unhandledRouter,
   sessionsRouter,
   assetsRouter,
+  companyRouter
 };

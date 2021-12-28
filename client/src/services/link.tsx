@@ -16,13 +16,13 @@ interface LinkToken {
 }
 
 interface LinkState {
-  byUser: LinkToken;
+  byCompany: LinkToken;
   byItem: LinkToken;
   error: PlaidLinkError;
 }
 
 const initialState = {
-  byUser: {}, // normal case
+  byCompany: {}, // normal case
   byItem: {}, // update mode
   error: {},
 };
@@ -38,7 +38,7 @@ type LinkAction =
 interface LinkContextShape extends LinkState {
   dispatch: Dispatch<LinkAction>;
   generateLinkToken: (
-    userId: number,
+    companyId: number,
     itemId: number | null | undefined
   ) => void;
   linkTokens: LinkState;
@@ -54,12 +54,12 @@ export function LinkProvider(props: any) {
   const [linkTokens, dispatch] = useReducer(reducer, initialState);
 
   /**
-   * @desc Creates a new link token for a given User or Item.
+   * @desc Creates a new link token for a given Company or Item.
    */
 
-  const generateLinkToken = useCallback(async (userId, itemId) => {
+  const generateLinkToken = useCallback(async (companyId, itemId) => {
     // if itemId is not null, update mode is triggered
-    const linkTokenResponse = await getLinkToken(userId, itemId);
+    const linkTokenResponse = await getLinkToken(companyId, itemId);
     if (linkTokenResponse.data.link_token) {
       const token = await linkTokenResponse.data.link_token;
       // console.log('success', linkTokenResponse.data);
@@ -71,7 +71,7 @@ export function LinkProvider(props: any) {
           token: token,
         });
       } else {
-        dispatch({ type: 'LINK_TOKEN_CREATED', id: userId, token: token });
+        dispatch({ type: 'LINK_TOKEN_CREATED', id: companyId, token: token });
       }
     } else {
       dispatch({ type: 'LINK_TOKEN_ERROR', error: linkTokenResponse.data });
@@ -98,7 +98,7 @@ function reducer(state: any, action: LinkAction) {
     case 'LINK_TOKEN_CREATED':
       return {
         ...state,
-        byUser: {
+        byCompany: {
           [action.id]: action.token,
         },
         error: {},

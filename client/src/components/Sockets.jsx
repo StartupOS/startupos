@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 
 import { useAccounts, useItems, useTransactions } from '../services';
-import { io } from "socket.io-client";
+import io from 'socket.io-client';
 const { REACT_APP_SERVER_PORT } = process.env;
 
 export default function Sockets() {

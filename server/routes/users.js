@@ -68,10 +68,20 @@ router.post(
  * @param {string} code the authorization code received by the client
  * @returns {Object} The constructed user profile
 */
+const codes = {};
+
 router.get('/LinkedInCode',asyncWrapper(async (req,res)=>{
+  console.log('in /LinkedInCode');
   console.log(req.query);
   let user = null;
-  const code = req.query.code;
+  let resStatus = 400;
+  let userFound = false;
+  let retJSON = {};
+  let existingUser = null;
+  const code  = req.query.code;
+ 
+  console.log('\n\n\n\nCODE:');
+  console.log(code);
   const accessToken = await getAccessToken(code);
   console.log(1)
   console.log(accessToken)
@@ -82,12 +92,10 @@ router.get('/LinkedInCode',asyncWrapper(async (req,res)=>{
   console.log(3)
   console.log(userEmail);
   console.log('retrieved bullshit');
-  let resStatus = 400;
-  let userFound = false;
-  let retJSON = {};
-  let existingUser = null;
-  if(!(accessToken === null || userProfile === null || userEmail === null)) {
+  
+  if(!(accessToken === null || userProfile === null || userEmail === null)|| codes[code]) {
     console.log('in conditional');
+    codes[code]=true;
     user = userBuilder(userProfile, userEmail);
     console.log('before attempting to log user')
     console.log(user);
@@ -115,6 +123,7 @@ router.get('/LinkedInCode',asyncWrapper(async (req,res)=>{
     retJSON.tiat = Date.now();
     const token = jwt.sign(retJSON, 'BOTTOM_SECRET');
     retJSON.token = token;
+    codes[code] = token;
   }
   res.status(resStatus).json(retJSON);
 }));
@@ -132,7 +141,10 @@ const urlToGetUserEmail = 'https://api.linkedin.com/v2/clientAwareMemberHandles?
 async function getAccessToken(code) {
   // let accessToken = null;
   console.log('1.1')
-  
+  if(codes[code]){
+
+  }
+  codes[code]=true;
   // LINKEDIN_CLIENT_SECRET
   // LINKEDIN_CLIENT_ID
   // LINKEDIN_OAUTH_REDIRECT
@@ -146,13 +158,15 @@ async function getAccessToken(code) {
     "redirect_uri": process.env.LINKEDIN_OAUTH_REDIRECT,
     "client_id": process.env.LINKEDIN_CLIENT_ID,
     "client_secret": process.env.LINKEDIN_CLIENT_SECRET,
+    "scope": process.env.LINKEDIN_SCOPE,
+    "state": process.env.LINKEDIN_STATE
   };
   console.log(parameters);
   console.log('1.2')
   const url = urlToGetLinkedInAccessToken+"?"+qs.stringify(parameters);
   console.log(url);
   const response = await fetch(url, {
-    method: 'post',
+    method: 'GET',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
   });
   console.log('1.3');
@@ -203,7 +217,7 @@ function userBuilder(userProfile, userEmail) {
   const retObj = {
     firstName: userProfile.firstName,
     lastName: userProfile.lastName,
-    profileImageURL: userProfile.profileImageURL,
+    picture: userProfile.profileImageURL,
     email: userEmail
   }
   console.log(retObj);

@@ -1,77 +1,91 @@
-import React, { useEffect } from 'react';
-import { Avatar, Popover, Typography, AvatarProps } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Avatar, Popover, Typography, Button } from '@mui/material';
+import { Link } from "react-router-dom";
+
 import { useCurrentUser } from '../services';
 import { blue } from '@mui/material/colors';
 
 import {LinkedIn} from '.';
 
 export default function SOSAvatar(props:any){
-    const {showPopup } = props;
-    const { userState } = useCurrentUser();
+    const { userState, getCurrentUser, logout } = useCurrentUser();
+    console.log(userState)
+    useEffect(() => {
+        getCurrentUser();
+    }, [getCurrentUser]);
     const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
-
-    const handleClick = (event:Event) => {
-        if (event.target instanceof Element)
-            setAnchorEl(event.target);
-    };
 
     const handleClose = () => {
         setAnchorEl(null);
     };
 
+    const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if(!open && event.target instanceof Element)
+            setAnchorEl(event.target);
+        else {
+            handleClose();
+        }
+    }
+
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
-    const Avatar2 = Avatar as any;
-    if(userState.currentUser && userState.currentUser.id){
+    if(userState && userState.currentUser && userState.currentUser.username){
+        console.log(userState.currentUser);
         return (
             <div className="Avatar">
-            <Avatar2
-                sx={{ bgcolor: blue[900] }}
-                alt={userState.currentUser.given_name + " " + userState.currentUser.family_name}
-                src={userState.currentUser.picture}
-                onClick={handleClick}
-            />
-            <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right'
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                }}
-            >
-                <Typography sx={{ p: 2 }}> Profile Information and link to edit</Typography>
-            </Popover>
+                <Button onClick={onClick}>
+                    <Avatar
+                        sx={{ bgcolor: blue[900] }}
+                        alt={userState.currentUser.given_name + " " + userState.currentUser.family_name}
+                        src={userState.currentUser.picture}
+                    />
+                </Button>
+                <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right'
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                    }}
+                >
+                    <Link to="/Companies">
+                        Companies 
+                    </Link>
+                    <br />
+                    <Button onClick={ logout }> Logout </Button>
+                </Popover>
             </div>
         )
     } else {
         return (
             <div className="Avatar">
-            <Avatar2
-                onClick={handleClick}
-                sx={{ bgcolor: blue[900] }}
-            />
-            <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right'
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                }}
-            >
-                <LinkedIn onClick={showPopup}/>
-            </Popover>
+                <Button onClick={onClick}>
+                    <Avatar
+                        sx={{ bgcolor: blue[900] }}
+                    />
+                </Button>
+                <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right'
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                    }}
+                >
+                    <LinkedIn />
+                </Popover>
             </div>
         )
     }

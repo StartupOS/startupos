@@ -3,9 +3,9 @@
  */
 
 const express = require('express');
-const { retrieveTransactionsByAccountId } = require('../db/queries');
+const { retrieveTransactionsByAccountId, deleteAccountById, unDeleteAccountById } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
-const { sanitizeTransactions } = require('../util');
+const { sanitizeTransactions, sanitizeAccounts } = require('../util');
 
 const router = express.Router();
 
@@ -21,6 +21,28 @@ router.get(
     const { accountId } = req.params;
     const transactions = await retrieveTransactionsByAccountId(accountId);
     res.json(sanitizeTransactions(transactions));
+  })
+);
+
+router.delete(
+  '/:accountId',
+  asyncWrapper(async (req, res) => {
+    const user = await req.user;
+    const { accountId } = req.params;
+    const q = {userId: user.id, accountId}
+    const accounts = await deleteAccountById(q);
+    res.json(sanitizeAccounts(accounts));
+  })
+);
+
+router.post(
+  '/:accountId',
+  asyncWrapper(async (req, res) => {
+    const user = await req.user;
+    const { accountId } = req.params;
+    const q = {userId: user.id, accountId}
+    const accounts = await unDeleteAccountById(q);
+    res.json(sanitizeAccounts(accounts));
   })
 );
 

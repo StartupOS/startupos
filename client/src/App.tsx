@@ -3,7 +3,17 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 
-import { UserPage, Landing2, Sockets, OAuthLink, UserList, Menu, Blank } from './components';
+import { 
+  CompaniesPage,
+  CompanyReportPage,
+  AccountsPage,
+  SharingPage, 
+  Landing2, 
+  Sockets, 
+  OAuthLink, 
+  UserList, 
+  Menu, 
+  Blank } from './components';
 import { AccountsProvider } from './services/accounts';
 import { InstitutionsProvider } from './services/institutions';
 import { ItemsProvider } from './services/items';
@@ -13,8 +23,10 @@ import { UsersProvider } from './services/users';
 import { CurrentUserProvider } from './services/currentUser';
 import { AssetsProvider } from './services/assets';
 import { ErrorsProvider } from './services/errors';
+import { CompaniesProvider } from './services/companies'
 
 import './App.scss';
+import './StartupOS.scss';
 import './Custom.scss';
 
 function App() {
@@ -37,16 +49,21 @@ function App() {
                   <UsersProvider>
                     <CurrentUserProvider>
                       <AssetsProvider>
-                        <Sockets />
-                        <Menu />
-                        <Switch>
-                          <Route exact path="/" component={Landing2} />
-                          <Route exact path="/Blank" component={Blank} />
-                          <Route exact path="/linked_in_auth" component={Landing2} />
-                          <Route path="/Dashboard" component={UserPage} />
-                          <Route path="/oauth-link" component={OAuthLink} />
-                          <Route path="/admin" component={UserList} />
-                        </Switch>
+                        <CompaniesProvider>
+                          <Sockets />
+                          <Menu />
+                          <Switch>
+                            <Route exact path="/" component={Landing2} />
+                            <Route exact path="/Blank" component={Blank} />
+                            <Route exact path="/linked_in_auth" component={Landing2} />
+                            <Route path="/Dashboard" component={CompanyReportPage} />
+                            <Route path="/Companies" component={CompaniesPage} />
+                            <Route path="/Accounts" component={AccountsPage} />
+                            <Route path="/oauth-link" component={OAuthLink} />
+                            <Route path="/Sharing" component={SharingPage} />
+                            <Route path="/admin" component={UserList} />
+                          </Switch>
+                        </CompaniesProvider>
                       </AssetsProvider>
                     </CurrentUserProvider>
                   </UsersProvider>

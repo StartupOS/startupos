@@ -25,7 +25,20 @@ const {
   linkTokensRouter,
   unhandledRouter,
   assetsRouter,
+  companyRouter
 } = require('./routes');
+
+const {
+  refreshInstitutions
+} = require('./institutions');
+
+// Runs every 5 minutes
+function refreshWrapper(){
+  refreshInstitutions()
+  setTimeout(refreshWrapper, 5*60*1000)
+}
+
+refreshWrapper();
 
 const app = express();
 
@@ -77,13 +90,19 @@ app.use((req, res, next) => {
 
 app.use(passport.initialize());
 
+let logOnce= true;
+
 // Set socket.io listeners.
 io.on('connection', socket => {
-  console.log('SOCKET CONNECTED');
+  if(logOnce){
+    console.log('SOCKET CONNECTED');
+    // console.log(socket);
 
-  socket.on('disconnect', () => {
-    console.log('SOCKET DISCONNECTED');
-  });
+    socket.on('disconnect', () => {
+      console.log('SOCKET DISCONNECTED');
+    });
+    logOnce = false;
+  }
 });
 
 app.get('/test', (req, res) => {
@@ -99,6 +118,7 @@ app.use('/services', serviceRouter);
 app.use('/link-event', passport.authenticate('jwt', { session: false }), linkEventsRouter);
 app.use('/link-token', passport.authenticate('jwt', { session: false }), linkTokensRouter);
 app.use('/assets', passport.authenticate('jwt', { session: false }), assetsRouter);
+app.use('/companies', passport.authenticate('jwt', { session: false }), companyRouter);
 app.use('*', unhandledRouter);
 
 // Error handling has to sit at the bottom of the stack.

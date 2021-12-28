@@ -24,9 +24,11 @@ const db = new Pool({
   idleTimeoutMillis: 1000, // close idle clients after 1 second
   connectionTimeoutMillis: 1000, // return an error after 1 second if connection could not be established
 });
-console.log(db);
+// console.log(db);
 db.connect()
-  .then(()=>{console.log(db)})
+  .then(()=>{
+    // console.log(db)
+  })
   .catch((err)=>{console.error('connection error', err.stack)});
 
 
