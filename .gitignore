@@ -59,6 +59,7 @@ dist/
 
 # dotenv environment variables file
 .env
+.env.bak
 
 # next.js build output
 .next
@@ -68,3 +69,4 @@ dist/
 
 # keys
 startupos.dev/
+jason.startupos.dev/

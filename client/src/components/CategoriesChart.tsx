@@ -1,11 +1,17 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 import colors from 'plaid-threads/scss/colors';
+import { WidgetsSharp } from '@mui/icons-material';
 
 interface Props {
   categories: {
     [key: string]: number;
   };
+  currencySymbol?: string;
+  heading?:string;
+  width?:number;
+  colors?:string[];
+  subheading?:string
 }
 
 export default function CategoriesChart(props: Props) {
@@ -24,15 +30,20 @@ export default function CategoriesChart(props: Props) {
     colors.black1000,
     colors.purple600,
   ];
-
+  const currencySymbol = props.currencySymbol!==undefined?props.currencySymbol:"$";
   const renderLabel = (value: any) => {
-    return `$${value.value.toLocaleString()}`;
+    return `${currencySymbol}${value.value.toLocaleString()}`;
   };
+  const heading = props.heading!==undefined?props.heading:"Spending Categories";
+  const width = props.width!==undefined?props.width:400;
+  const myColors = props.colors!==undefined?props.colors:COLORS;
+
 
   return (
     <div className="holdingsList">
-      <h4 className="holdingsHeading">Spending Categories</h4>
-      <PieChart width={400} height={400}>
+      <h4 className="holdingsHeading">{heading}</h4>
+      {props.subheading !==undefined && (<h5>{props.subheading}</h5>)}
+      <PieChart width={width} height={width}>
         <Legend />
         <Pie
           data={data}
@@ -46,7 +57,7 @@ export default function CategoriesChart(props: Props) {
           dataKey="value"
         >
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            <Cell key={`cell-${index}`} fill={myColors[index % myColors.length]} />
           ))}
         </Pie>
       </PieChart>

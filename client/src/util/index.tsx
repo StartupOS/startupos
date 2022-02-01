@@ -6,6 +6,7 @@ import {
   PlaidLinkOnEventMetadata,
   PlaidLinkError,
 } from 'react-plaid-link';
+import { EmployeeType } from '../components/types';
 
 import { postLinkEvent as apiPostLinkEvent } from '../services/api';
 
@@ -17,6 +18,42 @@ export function pluralize(noun: string, count: number) {
     noun=noun.slice(0,-1)+'ie';
   }
   return count === 1 ? noun : `${noun}s`;
+}
+
+export function capitalizeWords(s:string, replaceUnderScore:boolean=false):string{
+  const tokens=[];
+  const symbols=[];
+  const symbolsPos=[];
+  let token=""
+  for(let c of s){
+    if(c.match(/[a-z]/i)){
+      token+=c;
+    } else {
+      tokens.push(token);
+      token="";
+      symbols.push(c);
+      symbolsPos.push(tokens.length);
+    }
+  }
+  if(token) tokens.push(token);
+  let reconstructed="";
+  let counter=0;
+  const reversedSymbolPos = symbolsPos.reverse();
+  const reversedSymbols = symbols.reverse();
+  for(token of tokens){
+    if(token && token.length) {
+        const t = token[0].toUpperCase() + token.slice(1);
+        reconstructed+=t;
+    }
+    counter++;
+    while(reversedSymbolPos[reversedSymbolPos.length-1] === counter){
+      reversedSymbolPos.pop();
+      const symbol = reversedSymbols.pop();
+      reconstructed+=symbol==="_"&&replaceUnderScore?" ":symbol;
+    }
+
+  }
+  return reconstructed;
 }
 
 /**
@@ -32,6 +69,29 @@ export function currencyFilter(value: number) {
   return `${isNegative ? '-' : ''}$${displayValue
     .toFixed(2)
     .replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1,')}`;
+}
+
+export function payrollBreakDown(employees:EmployeeType[]) {
+  const hourly = employees.filter((e)=>e.period==='HOUR');
+  const salaried = employees.filter((e)=>e.period==='YEAR');
+  const projectedMonthlyHourly = hourly.reduce((p,c)=>p+(+c.rate),0)*160;
+  const projectedMonthlySalaried = salaried.reduce((p,c)=>p+(+c.rate),0)/12;
+  const projectedTotal = projectedMonthlyHourly + projectedMonthlySalaried
+  // TODO: Fix with actual employees actually getting paid
+  const actualMonthlyHourly = projectedMonthlyHourly*.75;
+  const actualMonthlySalaried = projectedMonthlySalaried*.5;
+  const actualTotal = actualMonthlyHourly + actualMonthlySalaried
+
+  return {
+    hourly,
+    salaried,
+    projectedMonthlyHourly,
+    projectedMonthlySalaried,
+    projectedTotal,
+    actualMonthlyHourly,
+    actualMonthlySalaried,
+    actualTotal
+  }
 }
 
 const months = [

@@ -191,7 +191,7 @@ export default function useCurrentUser() {
   const getUserCredentials = async (code:string) => {
     const NodeServer = {
         baseURL:"https://jason.startupos.dev/", 
-        getUserCredentials: "users/LinkedInCode"
+        getUserCredentials: "login/LinkedInCode"
     };
     const res = await axios.get(`${NodeServer.baseURL}${NodeServer.getUserCredentials}?code=${code}`);
     const user = res.data;

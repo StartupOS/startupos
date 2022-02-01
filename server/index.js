@@ -15,6 +15,7 @@ const ExtractJWT = require('passport-jwt').ExtractJwt;
 const { errorHandler } = require('./middleware');
 
 const {
+  loginRouter,
   usersRouter,
   sessionsRouter,
   itemsRouter,
@@ -25,17 +26,20 @@ const {
   linkTokensRouter,
   unhandledRouter,
   assetsRouter,
-  companyRouter
+  companyRouter,
+  mergeRouter,
+  employeeRouter,
+  messagesRouter
 } = require('./routes');
 
 const {
   refreshInstitutions
 } = require('./institutions');
 
-// Runs every 5 minutes
+// Runs every 60 minutes
 function refreshWrapper(){
   refreshInstitutions()
-  setTimeout(refreshWrapper, 5*60*1000)
+  setTimeout(refreshWrapper, 60*60*1000)
 }
 
 refreshWrapper();
@@ -72,9 +76,7 @@ passport.use(
 );
 
 httpsServer.listen(PORT)
-// const server = app.listen(PORT, () => {
-//   console.log(`listening on port ${PORT}`);
-// });
+
 const io = socketIo(httpsServer);
 
 app.use(logger('dev'));
@@ -109,7 +111,8 @@ app.get('/test', (req, res) => {
   res.send('test response');
 });
 
-app.use('/users', usersRouter);
+app.use('/login', loginRouter);
+app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
 app.use('/sessions', passport.authenticate('jwt', { session: false }), sessionsRouter);
 app.use('/items', passport.authenticate('jwt', { session: false }), itemsRouter);
 app.use('/accounts', passport.authenticate('jwt', { session: false }), accountsRouter);
@@ -119,6 +122,9 @@ app.use('/link-event', passport.authenticate('jwt', { session: false }), linkEve
 app.use('/link-token', passport.authenticate('jwt', { session: false }), linkTokensRouter);
 app.use('/assets', passport.authenticate('jwt', { session: false }), assetsRouter);
 app.use('/companies', passport.authenticate('jwt', { session: false }), companyRouter);
+app.use('/merge', passport.authenticate('jwt', { session: false }), mergeRouter);
+app.use('/employees', passport.authenticate('jwt', { session: false }), employeeRouter);
+app.use('/messages', passport.authenticate('jwt', { session: false }), messagesRouter);
 app.use('*', unhandledRouter);
 
 // Error handling has to sit at the bottom of the stack.

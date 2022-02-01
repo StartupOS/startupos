@@ -37,8 +37,8 @@ export default function Menu(){
             { currentCompany && (
             <>
               {currentCompany.logo ?  
-                <img src={currentCompany.logo} alt="Your Company Logo" /> : 
-                <DomainDisabledIcon sx={{ fontSize: "5em" }} />
+                <img src={currentCompany.logo} alt="Your Company Logo" className="Menu_Logo" /> : 
+                <DomainDisabledIcon sx={{ fontSize: "5em" }} className="Menu_Logo"/>
               }
               <span className="Menu_CompanyName">{currentCompany.name}</span>
             </>
@@ -57,6 +57,10 @@ export default function Menu(){
             <span className="Menu_Spacer-small"></span>
             <Link to="/Accounts">
               Accounts 
+            </Link>
+            <span className="Menu_Spacer-small"></span>
+            <Link to="/Employees">
+              Employees 
             </Link> 
             <span className="Menu_Spacer-small"></span>
             <Link to="/Sharing">
@@ -66,7 +70,7 @@ export default function Menu(){
             <Alerts />
             <Avatar />
             <SOSButton />
-            
+            <hr />
         </div>
     )
 }

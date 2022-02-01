@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Avatar, Popover, Typography, Button } from '@mui/material';
 import { Link } from "react-router-dom";
 
-import { useCurrentUser } from '../services';
+import { useCurrentUser, useCompanies } from '../services';
 import { blue } from '@mui/material/colors';
 
 import {LinkedIn} from '.';
 
 export default function SOSAvatar(props:any){
     const { userState, getCurrentUser, logout } = useCurrentUser();
+    const { companiesByUser, getCompany, listCompanies } = useCompanies();
+
     console.log(userState)
     useEffect(() => {
         getCurrentUser();
@@ -29,6 +31,7 @@ export default function SOSAvatar(props:any){
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
+    const displayName = userState.currentUser.given_name+" "+userState.currentUser.family_name;
     if(userState && userState.currentUser && userState.currentUser.username){
         console.log(userState.currentUser);
         return (
@@ -36,7 +39,7 @@ export default function SOSAvatar(props:any){
                 <Button onClick={onClick}>
                     <Avatar
                         sx={{ bgcolor: blue[900] }}
-                        alt={userState.currentUser.given_name + " " + userState.currentUser.family_name}
+                        alt={displayName}
                         src={userState.currentUser.picture}
                     />
                 </Button>
@@ -53,12 +56,15 @@ export default function SOSAvatar(props:any){
                         vertical: 'top',
                         horizontal: 'right'
                     }}
+                    className="avatar_popover"
                 >
+                    <h4>{displayName}</h4>
+                    <h5>{companiesByUser.currentCompany?.name}</h5>
                     <Link to="/Companies">
                         Companies 
                     </Link>
                     <br />
-                    <Button onClick={ logout }> Logout </Button>
+                    <Button onClick={ logout } variant="contained"> Logout </Button>
                 </Popover>
             </div>
         )

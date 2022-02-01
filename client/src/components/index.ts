@@ -29,7 +29,12 @@ export { default as Blank} from './Blank';
 export { default as CompaniesPage} from './CompaniesPage';
 export { default as CompanyReportPage} from './CompanyReportPage';
 export { default as CompaniesCard} from './CompaniesCard';
+export { default as EmployeeCard} from './EmployeeCard';
 export { default as AddCompanyForm} from './AddCompanyForm';
 export { default as SharingPage} from './Sharing';
 export { default as AccountsPage} from './AccountsPage';
+export { default as EmployeesPage} from './EmployeesPage';
+export { default as MergeLinkButton} from './MergeLinkButton';
+export { default as PayrollSummary} from './PayrollSummary';
+export { default as BurnChart} from './BurnChart';
 

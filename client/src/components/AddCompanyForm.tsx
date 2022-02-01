@@ -34,7 +34,9 @@ const c:CompanyType={
     city: 'New York',
     state: 'NY',
     country: 'USA',
-    owner:0
+    owner:0,
+    risk_score:0,
+    is_funder:false
 };
 
 

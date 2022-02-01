@@ -137,9 +137,83 @@ export type CompanyType = {
   country: string;
   owner: number;
   shared?: Number[];
+  risk_score: number;
+  is_funder:boolean
 }
 
-export interface CompanyCardProps extends CompanyType{
+export type MessageType = {
+  id?: number;
+  sender_user: number;
+  sender_org?: number;
+  message_body?: string;
+  pending_permission?: string;
+  receiver_user?: number;
+  receiver_org?: number;
+}
+
+export interface ExpandedMessageType extends MessageType {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  sender_org_name?:string;
+  sender_org_description?:string;
+  sender_org_logo?:string;
+  sender_org_city?:string;
+  sender_org_state?:string;
+  receiver_org_name?:string;
+  receiver_org_description?:string;
+  receiver_org_logo?:string;
+  receiver_org_city?:string;
+  receiver_org_state?:string;
+  sender_given_name?:string;
+  sender_family_name?:string;
+  sender_picture?:string;
+  receiver_given_name?:string;
+  receiver_family_name?:string;
+  is_read: boolean;
+  archived: boolean;
+  approved?: boolean;
+  receiver_picture?:string;
+}
+
+export type EmployeeType = {
+  id: number;
+  organization_id: number;
+  merge_id: string;
+  employee_number: string;
+  first_name: string;
+  last_name : string;
+  display_full_name: string;
+  work_email: string;
+  personal_email: string;
+  mobile_phone_number: string;
+  hire_date: string;
+  start_date: string;
+  employment_status: string;
+  termination_date: string;
+  avatar: string;
+  rate: string;
+  period: string;
+  frequency: string;
+  job_title: string;
+  deleted: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CompanyCardProps{
+  company: CompanyType;
+  employees: EmployeeType[];
+  accounts: AccountType[];
+  transactions: TransactionType[];
   selected:CompanyType|null;
   selectCompany:(company:CompanyType|null)=>void;
 }
+export interface ExtendedCompanyType extends CompanyType{
+  permissions: permission[]
+}
+export type permission = 'viewBalance' | 
+'viewTransactions' |
+'viewEmployees' |
+'viewEmployeeDetails' |
+'viewInsurance';

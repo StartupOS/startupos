@@ -14,6 +14,8 @@
 # misc
 .DS_Store
 .env.local
+.env.bak
+.env
 .env.development.local
 .env.test.local
 .env.production.local
@@ -31,3 +33,4 @@ src/util/dist/
 
 # keys
 startupos.dev/
+jason.startupos.dev/

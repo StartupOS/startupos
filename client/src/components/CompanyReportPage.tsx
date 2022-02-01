@@ -5,7 +5,7 @@ import NavigationLink from 'plaid-threads/NavigationLink';
 import LoadingSpinner from 'plaid-threads/LoadingSpinner';
 import Callout from 'plaid-threads/Callout';
 
-import { RouteInfo, ItemType, AccountType, AssetType, CompanyType } from './types';
+import { RouteInfo, ItemType, AccountType, AssetType, CompanyType, EmployeeType } from './types';
 import {
   useItems,
   useAccounts,
@@ -14,7 +14,8 @@ import {
   useAssets,
   useLink,
   useCurrentUser,
-  useCompanies
+  useCompanies,
+  useEmployees
 } from '../services';
 
 import { pluralize } from '../util';
@@ -28,6 +29,8 @@ import {
   UserCard,
   LoadingCallout,
   ErrorMessage,
+  PayrollSummary,
+  BurnChart
 } from '.';
 
 // provides view of user's net worth, spending by category and allows them to explore
@@ -51,6 +54,9 @@ const CompanyReportPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [accounts, setAccounts] = useState<AccountType[]>([]);
   const [assets, setAssets] = useState<AssetType[]>([]);
   const [userId, setUserId] = useState(0);
+
+  const { getEmployeesByCompany, updateEmployees, employeesByCompany } = useEmployees();
+  const [ employees, setEmployees ] = useState<EmployeeType[]>([]);
 
   useEffect(()=>{
     if(companiesByUser.currentCompany){
@@ -137,13 +143,24 @@ const CompanyReportPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     setToken(linkTokens.byCompany[companyId]);
   }, [linkTokens, companyId, numOfItems]);
 
+  useEffect(()=>{
+    if(companiesByUser.currentCompany)
+        getEmployeesByCompany(companiesByUser.currentCompany.id)
+  },[getEmployeesByCompany, companiesByUser])
+
+  useEffect(() => {
+      if(companiesByUser.currentCompany && employeesByCompany[companiesByUser.currentCompany.id])
+        setEmployees(Object.values(employeesByCompany[companiesByUser.currentCompany.id]) || []);
+  }, [employeesByCompany, companiesByUser, getEmployeesByCompany]);
+
   document.getElementsByTagName('body')[0].style.overflow = 'auto'; // to override overflow:hidden from link pane
   
   const canLink = !!(currentCompany && (userId == currentCompany.owner) && token && token.length);
+  console.log(employees);
 
   return (
     <div>
-      <Banner />
+      <Banner header="StartupOS Report" help={true}/>
       {linkTokens.error.error_code != null && (
         <Callout warning>
           <div>
@@ -175,6 +192,11 @@ const CompanyReportPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       )}
       {numOfItems > 0 && transactions.length > 0 && (
         <>
+          <BurnChart 
+            transactions={transactions} 
+            accounts={accounts}
+            employees={employees}
+          />
           <NetWorth
             accounts={accounts}
             numOfItems={numOfItems}
@@ -187,6 +209,7 @@ const CompanyReportPage = ({ match }: RouteComponentProps<RouteInfo>) => {
             numOfItems={numOfItems}
             transactions={transactions}
           />
+
         </>
       )}
       {numOfItems === 0 && transactions.length === 0 && assets.length > 0 && (
@@ -199,11 +222,13 @@ const CompanyReportPage = ({ match }: RouteComponentProps<RouteInfo>) => {
             assetsOnly
             canEdit={canLink}
           />
+          {!!employees.length && (<PayrollSummary employees={employees} />)}
         </>
       )}
       {numOfItems > 0 && (
         <>
-          <div className="item__header">
+          {!!employees.length && (<PayrollSummary employees={employees} />)}
+          <div className="item__header report_section">
             <div>
               <h2 className="item__header-heading">
                 {`${items.length} ${pluralize('Bank', items.length)} Linked`}

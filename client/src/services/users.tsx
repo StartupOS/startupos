@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useMemo,
@@ -12,7 +12,6 @@ import omit from 'lodash/omit';
 import { toast } from 'react-toastify';
 
 import { UserType } from '../components/types';
-import { useAccounts, useItems, useTransactions } from '.';
 import {
   getUsers as apiGetUsers,
   getUserById as apiGetUserById,

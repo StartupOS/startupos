@@ -35,6 +35,7 @@ const {
   retrieveUsers,
   retrieveUserById,
   retrieveUserByUsername,
+  createLinkedInUser
 } = require('./users');
 const { createLinkEvent } = require('./linkEvents');
 
@@ -54,8 +55,39 @@ const {
   retrieveItemsByCompany,
   retrieveAccountsByCompanyId,
   updateSharing,
-  getOwnedOrg
+  setRiskScore,
+  getOwnedOrg,
+  hasPermissions,
+  grantPermissions,
+  grantPermissionsToOrg,
+  revokePermissions,
+  revokePermissionsFromOrg,
+  makeSharingTarget,
+  revokeSharingTarget,
+  listFunders,
+  companiesWithPermissions,
+  retrieveCompaniesSharingWithMe,
+  retrieveCompaniesIShareWith,
 } = require('./companies');
+
+const {
+  createMergeToken,
+  retrieveMergeTokens
+} = require('./merge');
+
+const {
+  upsertEmployees,
+  listEmployees,
+  retrieveEmployee
+} = require('./employees');
+
+const {
+  getMessages,
+  createMessage,
+  retrieveMessage,
+  updateMessage,
+  deleteMessage
+} = require('./messages');
 
 module.exports = {
   // accounts
@@ -86,6 +118,7 @@ module.exports = {
   retrieveUserById,
   retrieveUserByUsername,
   retrieveUsers,
+  createLinkedInUser,
   // assets
   createAsset,
   retrieveAssetsByCompany,
@@ -102,8 +135,33 @@ module.exports = {
   retrieveItemsByCompany,
   retrieveAccountsByCompanyId,
   updateSharing,
+  makeSharingTarget,
+  revokeSharingTarget,
   getOwnedOrg,
+  setRiskScore,
+  hasPermissions,
+  grantPermissions,
+  grantPermissionsToOrg,
+  revokePermissions,
+  revokePermissionsFromOrg,
+  listFunders,
+  companiesWithPermissions,
+  retrieveCompaniesSharingWithMe,
+  retrieveCompaniesIShareWith,
   // institutions
   listUsedInstitutions,
-  updateInstitution
+  updateInstitution,
+  // Merge Account Tokens
+  createMergeToken,
+  retrieveMergeTokens,
+  // Employees
+  upsertEmployees,
+  listEmployees,
+  retrieveEmployee,
+  // Messages
+  getMessages,
+  createMessage,
+  retrieveMessage,
+  updateMessage,
+  deleteMessage
 };

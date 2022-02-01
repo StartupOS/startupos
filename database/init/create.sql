@@ -43,7 +43,6 @@ BEGIN
 END
 $$ LANGUAGE plpgsql strict immutable;
 
-
 -- TODO
 -- CREATE OR REPLACE FUNCTION trigger_add_subject()
 -- RETURNS void AS $$
@@ -77,10 +76,6 @@ CREATE TABLE if not exists users_table
   updated_at timestamptz default now(),
   organizations integer[],
   groups integer[]
-  -- subject_id integer,
-  -- constraint fk_subjects
-  --   foreign key(subject_id)
-  --     references subjects(id)
 );
 
 CREATE TRIGGER users_updated_at_timestamp
@@ -118,14 +113,11 @@ CREATE TABLE if not exists organizations_table
   city text,
   state text,
   country text,
+  is_funder boolean default false,
+  risk_score smallint default 0,
   owner integer NOT NULL REFERENCES users_table(id) ON DELETE CASCADE,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
-  -- TODO re:Subjects
-  -- subject_id integer,
-  -- constraint fk_subjects
-  --   foreign key(subject_id)
-  --     references subjects(id)
 );
 CREATE TRIGGER organizations_updated_at_timestamp
 BEFORE UPDATE ON organizations_table
@@ -182,6 +174,7 @@ CREATE TABLE if not exists assets_table
   id SERIAL PRIMARY KEY,
   random_id integer,
   organization_id integer REFERENCES organizations_table(id) ON DELETE CASCADE,
+  object_key text,
   value numeric(28,2),
   description text,
   created_at timestamptz default now(),
@@ -199,6 +192,7 @@ AS
     id,
     random_id,
     organization_id,
+    object_key,
     value,
     description,
     created_at,
@@ -234,9 +228,6 @@ AS
     updated_at
   FROM
     liabilities_table;
-
-
-
 
 -- ACCOUNTS
 -- This table is used to store the accounts associated with each item. The view returns all the
@@ -391,52 +382,6 @@ CREATE TABLE if not exists plaid_api_events_table
   created_at timestamptz default now()
 );
 
-
-
-
--- CREATE TABLE groups
--- (
---   id SERIAL PRIMARY KEY,
---   name text UNIQUE,
---   owner integer NOT NULL,
---   organization integer.
---   subject_id integer,
---   constraint fk_subjects
---     foreign key(subject_id)
---       references subjects(id)
--- )
-
--- CREATE TABLE permissions
--- (
---   id SERIAL PRIMARY KEY,
---   subject text NOT NULL, 
---   object text NOT NULL, 
---   verb text NOT NULL, 
---   context text,
---   constraint fk_subject_id
---     foreign key(subject)
---     references subjects(id)
--- )
-
--- create table subjects
--- (
---   id SERIAL PRIMARY KEY,
---   type text NOT NULL,
---   host_id int
--- )
-
--- create table group_memberships
--- (
---   user_id int,
---   group_id int,
---   constraint fk_user_id
---     foreign key(user_id)
---     references users_table(id)
---   constraint fk_group_id
---     foreign key(group_id)
---     references groups(id)
--- )
-
 create table organization_memberships
 (
   id SERIAL PRIMARY KEY,
@@ -458,3 +403,138 @@ create table if not exists institutions_table
   routing_numbers text,
   status text
 );
+
+create table if not exists merge_tokens_table
+(
+  id SERIAL PRIMARY KEY,
+  user_id int not null references users_table(id) on DELETE CASCADE,
+  organization_id int not null references organizations_table(id) on DELETE CASCADE,
+  token text
+);
+
+create table if not exists employees_table (
+  id SERIAL PRIMARY KEY,
+  random_id int,
+  organization_id int not null references organizations_table(id) on DELETE CASCADE,
+  merge_id text unique not null,
+  employee_number text,
+  first_name text not null,
+  last_name text not null,
+  display_full_name text not null,
+  work_email text not null,
+  personal_email text,
+  mobile_phone_number text,
+  hire_date text not null,
+  start_date text not null,
+  employment_status text not null,
+  termination_date text,
+  avatar text,
+  rate text, 
+  period text,
+  frequency text,
+  job_title text,
+  deleted boolean default false,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+CREATE TRIGGER employees_updated_at_timestamp
+BEFORE UPDATE ON employees_table
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+create table if not exists insurance_table(
+  id SERIAL PRIMARY KEY,
+  organization_id int not null references organizations_table(id) on delete cascade,
+  identifier text not null,
+  policy_type text not null,
+  document text not null,
+  provider int not null references insurance_provider_table(id) on delete set null
+)
+
+create table if not exists insurance_provider_table(
+  id SERIAL PRIMARY KEY,
+  name text unique not null,
+  phone text,
+  url text unique not null,
+  address_1 text,
+  address_2 text,
+  city text,
+  state text,
+  zip text
+)
+
+create table if not exists org_relations(
+  id SERIAL PRIMARY KEY,
+  random_id int,
+  subject int not null references organizations_table(id) on delete cascade,
+  type text,
+  object int not null references organizations_table(id) on delete cascade,
+  created_at timestamptz,
+  updated_at timestamptz
+)
+
+CREATE TRIGGER org_relations_updated_at_timestamp
+BEFORE UPDATE ON org_relations
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+create table if not exists messages_table(
+  id SERIAL PRIMARY KEY,
+  random_id int,
+  sender_user int not null references users_table(id) on delete set null,
+  sender_org int references organizations_table(id) on delete set null,
+  message_body text,
+  pending_permission text,
+  receiver_user int references users_table(id) on delete cascade,
+  receiver_org int references organizations_table(id) on delete cascade,
+  is_read boolean default false,
+  approved boolean,
+  created_at timestamptz,
+  updated_at timestamptz
+);
+
+CREATE TRIGGER messages_updated_at_timestamp
+BEFORE UPDATE ON messages_table
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+drop view messages;
+create view messages as
+  select
+    m.id,
+    m.sender_user,
+    m.sender_org,
+    m.message_body,
+    m.pending_permission,
+    m.receiver_user,
+    m.receiver_org,
+    m.is_read,
+    m.approved,
+    m.created_at,
+    m.updated_at,
+    sO.name as sender_org_name,
+    sO.city as sender_org_city,
+    sO.state as sender_org_state,
+    sO.description as sender_org_description,
+    sO.logo as sender_org_logo,
+    rO.name as receiver_org_name,
+    rO.city as receiver_org_city,
+    rO.state as receiver_org_state,
+    rO.description as receiver_org_description,
+    rO.logo as receiver_org_logo,
+    sU.given_name as sender_given_name,
+    sU.family_name as sender_family_name,
+    sU.picture as sender_picture,
+    rU.given_name as receiver_given_name,
+    rU.family_name as receiver_family_name,
+    rU.picture as receiver_picture
+  from messages_table m
+  left outer join organizations_table sO
+  on sO.id = m.sender_org
+  left outer join organizations_table rO
+  on rO.id = m.receiver_org
+  left outer join users sU
+  on sU.id = m.sender_user
+  left outer join users rU
+  on rU.id = m.receiver_user;

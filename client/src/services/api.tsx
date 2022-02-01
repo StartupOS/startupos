@@ -4,7 +4,7 @@ import { PlaidLinkOnSuccessMetadata } from 'react-plaid-link';
 
 import { DuplicateItemToastMessage } from '../components';
 // import { number } from 'prop-types';
-import { CompanyType } from '../components/types';
+import { CompanyType, UserType, MessageType } from '../components/types';
 
 
 const baseURL = '/';
@@ -35,11 +35,33 @@ export const getCurrentUser = () => {
 
 //companies
 export const listCompanies = ()=>api.get('/companies');
+export const listFunders = ()=>api.get('/companies/funders');
 export const getCompany = (companyId: number)=>api.get('/companies/'+companyId);
 export const createCompany = (company: CompanyType)=>api.post('/companies/', company);
 export const updateCompany = (company: CompanyType)=>api.put('/companies/'+company.id, company);
 export const deleteCompany = (companyId: number)=>api.get('/companies/'+companyId);
+export const enableSharing = (companyId: number)=>api.post(`/companies/${companyId}/enable_receive_sharing`);
+export const canEnableSharing = (companyId: number)=>api.get(`/companies/${companyId}/enable_receive_sharing`);
+export const disableSharing = (companyId: number)=>api.delete(`/companies/${companyId}/enable_receive_sharing`);
+export const grantPermissions = (companyId: number, target:UserType, permisssions:string[])=>
+  api.post(`/companies/${companyId}/grant_permissions`, {target, permisssions});
+export const revokePermissions = (companyId: number, target:UserType, permisssions:string[])=>
+  api.post(`/companies/${companyId}/revoke_permissions`, {target, permisssions});
 
+export const whoCanISee = (companyId: number)=>api.get(`/companies/${companyId}/sees`);
+export const whoSeesMe = (companyId: number)=>api.get(`/companies/${companyId}/seen_by`);
+
+// messages
+export const listMessages = ()=>api.get('/messages/');
+export const createMessage = (message:MessageType)=>api.post('/messages/', message);
+export const retrieveMessage = (messageId: number)=>api.get(`/messages/${messageId}`);
+export const updateMessage = (message: MessageType)=>api.put(`/messages/${message.id}`, message);
+export const deleteMessage = (messageId: number)=>api.delete(`/messages/${messageId}`)
+export const archiveMessage = (messageId: number)=>api.post(`/messages/${messageId}/archive`)
+export const unarchiveMessage = (messageId: number)=>api.post(`/messages/${messageId}/unarchive`)
+export const markMessageRead = (messageId: number)=>api.post(`/messages/${messageId}/read`)
+export const markMessageUnread = (messageId: number)=>api.post(`/messages/${messageId}/unread`)
+export const acceptMessage = (messageId: number)=>api.post(`/messages/${messageId}/accept`)
 
 
 // assets
@@ -93,6 +115,17 @@ export const getTransactionsByCompany = (companyId: number) =>
 // institutions
 export const getInstitutionById = (instId: string) =>
   api.get(`/institutions/${instId}`);
+
+// merge
+export const getMergeLinkToken = (companyId: number) => api.get(`/merge/${companyId}/link_token`);
+export const hasMergeAccountToken = (companyId: number) => api.get(`/merge/${companyId}/has_token`);
+export const exchangeMergePublicToken = (companyId: number, publicToken:string) => 
+  api.post(`/merge/${companyId}/exchange_token`, {publicToken});
+
+// employees
+export const updateEmployees = (companyId: number) => api.post(`/employees/${companyId}/update`);
+export const listEmployees = (companyId:number) => api.get(`/employees/${companyId}`);
+export const retrieveEmployee = (companyId:number, employeeId: number) => api.get(`/employees/${companyId}/${employeeId}`);
 
 // misc
 export const postLinkEvent = (event: any) => api.post(`/link-event`, event);

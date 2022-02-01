@@ -4,6 +4,8 @@ import React from 'react';
 
 interface Props {
   initialSubheading?: boolean;
+  header?:string;
+  help?:boolean;
 }
 
 const Banner = (props: Props) => {
@@ -15,14 +17,18 @@ const Banner = (props: Props) => {
 
   const subheadingText = props.initialSubheading ? initialText : successText;
 
+  const headerText = props.header || "StartupOS"
+  const toolTip=!!props.help;
+
   return (
-    <div id="banner" className="bottom-border-content">
-      <div className="header">
-        <h1 className="everpresent-content__heading">StartupOS</h1>
+    <div id="banner" className={toolTip?"bottom-border-content":""}>
+      <div className="header" title={toolTip?subheadingText:""}>
+        <h1 className="everpresent-content__heading">{headerText}</h1>
       </div>
-      <p id="intro" className="everpresent-content__subheading">
+      {!toolTip &&
+      (<p id="intro" className="everpresent-content__subheading">
         {subheadingText}
-      </p>
+      </p>)}
     </div>
   );
 };

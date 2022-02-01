@@ -73,7 +73,24 @@ const listCompanies = async userId => {
     }
     const { rows } = await db.query(query);
     console.log(rows);
+    if(!rows){
+      return []
+    }
     return rows
+}
+
+const setRiskScore = async (id, score)=>{
+  const query = {
+    text: `
+      update organizations_table
+      set risk_score=$1
+      where id=$2
+      returning *
+    `,
+    values:[score, id]
+  }
+  const { rows } = await db.query(query);
+  return rows;
 }
 
 const updateSharing = async q =>{
@@ -95,7 +112,7 @@ const updateSharing = async q =>{
   const actualCompany = resp.rows[0];
   console.log(actualCompany);
   if(!actualCompany || +actualCompany.owner != +userId){
-    return;
+    return [];
   }
   console.log(5.3)
   const deleteQuery = {
@@ -137,6 +154,202 @@ const updateSharing = async q =>{
   return selectedRows;
 }
 
+/**
+ * Grant the permissions to the org on the company
+ *
+ * @param {number} orgId the ID of the org gaining permissins.
+ * @param {number} companyId the ID of the target company.
+ * @param {string[]} permissions list of permissions to grant.
+ * @returns {Object} an object containing the arguments.
+ */
+ const grantPermissionsToOrg = async (orgId, companyId, permissions)=>{
+  for(p in permissions){
+    const query = {
+      text:` 
+        insert into org_relations 
+        (subject, object, type) 
+        values
+        ($1,$2,$3)
+        returning *;
+      `,
+      values:[orgId, companyId, p]
+    }
+    await db.q(query);
+  }
+  return {userId, companyId, permissions}
+}
+/**
+ * Revokes the permissions to the user on the company
+ *
+ * @param {number} orgId the ID of the user.
+ * @param {number} companyId the ID of the target company.
+ * @param {string[]} permissions list of permissions to grant.
+ * @returns {Object} an object containing the arguments.
+ */
+ const revokePermissionsFromOrg = async (orgId, companyId, permissions)=>{
+  for(p in permissions){
+    const query = {
+      text:` 
+        delete from org_relations 
+        where
+          subject = $1 and
+          object=$2 and 
+          type=$3
+      `,
+      values:[userId, companyId, p]
+    }
+    await db.q(query);
+  }
+  return {userId, companyId, permissions}
+}
+
+/**
+ * Grant the permissions to the user on the company
+ *
+ * @param {number} userId the ID of the user.
+ * @param {number} companyId the ID of the target company.
+ * @param {string[]} permissions list of permissions to grant.
+ * @returns {Object} an object containing the arguments.
+ */
+ const grantPermissions = async (userId, companyId, permissions)=>{
+  for(p in permissions){
+    const query = {
+      text:` 
+        insert into organization_memberships 
+        (user_id, organization_id, membership_type) 
+        values
+        ($1,$2,$3)
+        returning *;
+      `,
+      values:[userId, companyId, p]
+    }
+    await db.q(query);
+  }
+  return {userId, companyId, permissions}
+}
+
+/**
+ * Revokes the permissions to the user on the company
+ *
+ * @param {number} userId the ID of the user.
+ * @param {number} companyId the ID of the target company.
+ * @param {string[]} permissions list of permissions to grant.
+ * @returns {Object} an object containing the arguments.
+ */
+ const revokePermissions = async (userId, companyId, permissions)=>{
+  for(p in permissions){
+    const query = {
+      text:` 
+        delete from organization_memberships 
+        where
+          user_id = $1 and
+          organization_id=$2 and 
+          membership_type=$3
+      `,
+      values:[userId, companyId, p]
+    }
+    await db.q(query);
+  }
+  return {userId, companyId, permissions}
+}
+
+
+/**
+ * Checks to see if a user has any of the acceptable permissions
+ * 
+ * More accurately, does the user have the permissions, or are they
+ * the owner or employee of a company with those permissions.
+ *
+ * @param {number} userId the ID of the user.
+ * @param {number} companyId the ID of the target company.
+ * @param {string[]} permissions list of acceptable permissions.
+ * @returns {boolean} the new property.
+ */
+const hasPermissions = async (userId, companyId, permissions)=>{
+  const query = {
+    text:` 
+      select *
+      from organizations_table o
+      full outer join org_relations p
+      on p.object=o.id
+      full outer join organization_memberships m
+      on 
+        m.organization_id=o.id
+      full outer join organization_memberships m2
+      on m2.organization_id=p.subject
+      full outer join organizations_table o2
+      on o2.id=p.subject
+      
+      where 
+        o.id=$2 and
+        (
+          o.owner = $1 or 
+          (
+            m.membership_type=ANY($3::text[]) and 
+            m.user_id=$1
+          ) or (
+            m2.membership_type='employee' and
+            m2.user_id=$1 and
+            type=ANY($3::text[])
+          ) or (
+            o2.owner=$1 and
+            type=ANY($3::text[])
+          )
+        )
+    `,
+    values:[userId, companyId, permissions]
+  }
+  try{
+    const res = await db.q(query);
+    return !!res.length
+  } catch(ex){
+    console.log('error in hasPermissions');
+    console.log(ex);
+  }
+}
+
+const companiesWithPermissions = async(userId, permissions)=>{
+  const query = {
+    text:` 
+      select o.id
+      from organizations_table o
+      full outer join org_relations p
+      on p.object=o.id
+      full outer join organization_memberships m
+      on 
+        m.organization_id=o.id
+      full outer join organization_memberships m2
+      on m2.organization_id=p.subject
+      full outer join organizations_table o2
+      on o2.id=p.subject
+      
+      where 
+        (
+          o.owner = $1 or 
+          (
+            m.membership_type=ANY($2::text[]) and 
+            m.user_id=$1
+          ) or (
+            m2.membership_type='employee' and
+            m2.user_id=$1 and
+            type=ANY($2::text[])
+          ) or (
+            o2.owner=$1 and
+            type=ANY($2::text[])
+          )
+        )
+    `,
+    values:[userId, permissions]
+  }
+  try{
+    const rows = await db.q(query);
+    return rows;
+  } catch(ex){
+    console.log('error in companiesWithPermissions');
+    console.log(ex);
+  }
+}
+
 const retrieveCompany = async q => {
     const {userId, companyId} = q;
     const query = {
@@ -145,12 +358,53 @@ const retrieveCompany = async q => {
         join organization_memberships m
         on m.organization_id=o.id
         where 
-          id=$2 and
+          o.id=$2 and
           (owner = $1 or (membership_type='viewer' and user_id=$1))`,
         values: [userId, companyId]
     }
     const { rows } = await db.query(query);
     return rows[0]
+}
+
+const listFunders = async ()=>{
+  const sql=`
+    select * from organizations_table
+    where is_funder=true
+  `
+  try {
+    const r = await db.q(sql);
+    return r
+  } catch(ex){
+    console.log('\n\n\n\n\n')
+    console.log(ex)
+    console.log('\n\n\n\n\n')
+  }
+}
+
+const makeSharingTarget = async (companyId) => {
+  const query = {
+    text: `
+      update organizations_table
+      set is_funder=true
+      where id=$1
+      returning *
+    `,
+    values:[companyId]
+  };
+  return await db.q(query);
+}
+
+const revokeSharingTarget = async (companyId) => {
+  const query = {
+    text: `
+      update organizations_table
+      set is_funder=false
+      where id=$1
+      returning *
+    `,
+    values:[companyId]
+  };
+  return await db.q(query);
 }
 
 const getOwnedOrg = async q => {
@@ -277,12 +531,54 @@ const updateCompany = async q => {
     };
     console.log('retrieve Items By Company')
     const resp = await db.query(query);
-    console.log(resp);
     const { rows: items } = resp
     return items;
   };
 
-// retrieveTransactionsByCompanyId
+const retrieveCompaniesSharingWithMe = async companyId => {
+  const sql = `
+    select subject, array_agg(type)
+    from org_relations
+    where
+      type in (
+        'viewBalance',
+        'viewTransactions',
+        'viewEmployees',
+        'viewEmployeeDetails',
+        'viewInsurance'
+      ) and
+      subject = $1
+      group by subject
+  `
+  const query = {
+    text:sql,
+    values:[companyId]
+  }
+  const rows=await db.q(query);
+  return rows
+}
+const retrieveCompaniesIShareWith = async companyId => {
+  const sql = `
+    select subject, array_agg(type)
+    from org_relations
+    where
+      type in (
+        'viewBalance',
+        'viewTransactions',
+        'viewEmployees',
+        'viewEmployeeDetails',
+        'viewInsurance'
+      ) and
+      object = $1
+      group by subject
+  `
+  const query = {
+    text:sql,
+    values:[companyId]
+  }
+  const rows=await db.q(query);
+  return rows
+}
 
 module.exports={
     createCompany,
@@ -294,5 +590,17 @@ module.exports={
     retrieveItemsByCompany,
     retrieveAccountsByCompanyId,
     updateSharing,
-    getOwnedOrg
+    getOwnedOrg,
+    setRiskScore,
+    makeSharingTarget,
+    revokeSharingTarget,
+    hasPermissions,
+    companiesWithPermissions,
+    retrieveCompaniesSharingWithMe,
+    retrieveCompaniesIShareWith,
+    grantPermissions,
+    revokePermissions,
+    grantPermissionsToOrg,
+    revokePermissionsFromOrg,
+    listFunders
 }
