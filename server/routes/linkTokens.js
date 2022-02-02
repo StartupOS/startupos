@@ -46,7 +46,7 @@ router.post(
         country_codes: ['US'],
         language: 'en',
         // webhook: httpTunnel.public_url + '/services/webhook',
-        webhook: 'https://jason.startupos.dev:5000/services/webhook',
+        webhook: process.env.PLAID_WEBHOOK_URI,
         access_token: accessToken,
       };
       // If user has entered a redirect uri in the .env file

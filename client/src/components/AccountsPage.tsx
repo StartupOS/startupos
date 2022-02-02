@@ -1,33 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
-import sortBy from 'lodash/sortBy';
-import NavigationLink from 'plaid-threads/NavigationLink';
-import LoadingSpinner from 'plaid-threads/LoadingSpinner';
-import Callout from 'plaid-threads/Callout';
+import { useEffect, useState } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 
-import { RouteInfo, ItemType, AccountType, AssetType, CompanyType } from './types';
+import { RouteInfo, AccountType, CompanyType } from './types';
 import {
-  useItems,
   useAccounts,
-  useTransactions,
-  useUsers,
-  useAssets,
   useLink,
   useCurrentUser,
   useCompanies
 } from '../services';
 
-import { pluralize } from '../util';
 
 import {
-  Banner,
   LinkButton,
-  SpendingInsights,
-  NetWorth,
   AccountCard,
-  UserCard,
-  LoadingCallout,
-  ErrorMessage,
 } from '.';
 
 // provides view of user's net worth, spending by category and allows them to explore
@@ -69,12 +54,12 @@ const AccountsPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     useEffect(()=>{
         if(companiesByUser.currentCompany)
             getAccountsByCompany(companiesByUser.currentCompany.id)
-    },[companiesByUser])
+    },[companiesByUser, getAccountsByCompany])
 
     useEffect(() => {
         if(companiesByUser.currentCompany)
             setAccounts(accountsByCompany[companiesByUser.currentCompany.id] || []);
-    }, [accountsByCompany, getAccountsByCompany]);
+    }, [accountsByCompany, getAccountsByCompany, companiesByUser.currentCompany]);
 
     // creates new link token upon new user or change in number of items
     useEffect(() => {
@@ -87,13 +72,13 @@ const AccountsPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       setToken(linkTokens.byCompany[companyId]);
     }, [linkTokens, companyId]);
 
-    const canLink = !!(currentCompany && (userId == currentCompany.owner) && token && token.length);
+    const canLink = !!(currentCompany && (userId === currentCompany.owner) && token && token.length);
 
     console.log('Can Link?')
     console.log(canLink);
     console.log(currentCompany);
     console.log('UserId:', userId);
-    console.log('Owner:', userId==currentCompany?.owner)
+    console.log('Owner:', userId === currentCompany?.owner)
     console.log('Token:', token);
 
     console.log('Accounts:')

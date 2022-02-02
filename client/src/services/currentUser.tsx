@@ -6,11 +6,14 @@ import React, {
   useCallback,
   Dispatch,
 } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { getLoginUser as apiGetLoginUser } from './api';
-import { getCurrentUser as apiGetCurrentUser } from './api'
+import { 
+  getLoginUser as apiGetLoginUser,
+  getCurrentUser as apiGetCurrentUser,
+  getLinkedInCredentials as apiGetLinkedInCredentials 
+} from './api';
+
 import { UserType } from '../components/types';
 
 interface CurrentUserState {
@@ -189,11 +192,7 @@ export default function useCurrentUser() {
   };
   
   const getUserCredentials = async (code:string) => {
-    const NodeServer = {
-        baseURL:"https://jason.startupos.dev/", 
-        getUserCredentials: "login/LinkedInCode"
-    };
-    const res = await axios.get(`${NodeServer.baseURL}${NodeServer.getUserCredentials}?code=${code}`);
+    const res = await apiGetLinkedInCredentials(code);
     const user = res.data;
     localStorage.setItem('user', JSON.stringify(user));
     context.login(user);

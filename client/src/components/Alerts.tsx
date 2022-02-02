@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Badge from '@mui/material/Badge';
 import { Popover, Typography, Button } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';

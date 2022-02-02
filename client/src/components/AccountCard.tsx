@@ -24,7 +24,7 @@ export default function AccountCard(props: Props) {
   const { transactionsByAccount, getTransactionsByAccount } = useTransactions();
 
   const { id, primary_color } = props.account;
-  const { getAccountsByCompany, accountsByCompany, deleteAccountById, unDeleteAccountById } = useAccounts();
+  const { deleteAccountById, unDeleteAccountById } = useAccounts();
 
   const toggleShowTransactions = () => {
     setTransactionsShown(shown => !shown);
@@ -50,7 +50,7 @@ export default function AccountCard(props: Props) {
   return (
     <div>
       <div className="account-data-row" style={{border:'1px solid '+primary_color}}>
-      {props.account.logo && (<img src={"data:image/png;base64, " + bString} className="AccountLogo" />)}
+      {props.account.logo && (<img src={"data:image/png;base64, " + bString} className="AccountLogo" alt="Account Logo" />)}
         <div className="account-data-row__left">
           <div className="account-data-row__name">{props.account.name}</div>
           <div className="account-data-row__balance">{`${startCase(

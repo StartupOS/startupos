@@ -13,7 +13,7 @@ import {
     ReferenceLine
 } from 'recharts';
 import { TransactionType, AccountType, EmployeeType } from './types'
-import { currencyFilter, payrollBreakDown, capitalizeWords } from '../util'
+import { payrollBreakDown, capitalizeWords } from '../util'
 import colors from 'plaid-threads/scss/colors';
 import moment  from 'moment';
 

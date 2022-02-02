@@ -1,5 +1,3 @@
-import { ProcessorStripeBankAccountTokenCreateResponse } from 'plaid';
-import { number } from 'prop-types';
 import {
     useCallback,
     useContext,
@@ -78,6 +76,7 @@ export function MergeLinkProvider(props: any) {
 
     const exchangePublicToken = useCallback(async (companyId:number, publicToken:string)=>{
         const AccountToken = await apiExchangeMergePublicToken(companyId, publicToken);
+        console.log(AccountToken);
         dispatch({type:'MERGE_ACCOUNT_TOKEN_CREATED', id:companyId})
     },[])
 

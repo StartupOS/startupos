@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Avatar, Popover, Typography, Button } from '@mui/material';
+import React, { useEffect } from 'react';
+import { Avatar, Popover, Button } from '@mui/material';
 import { Link } from "react-router-dom";
 
 import { useCurrentUser, useCompanies } from '../services';
@@ -9,7 +9,7 @@ import {LinkedIn} from '.';
 
 export default function SOSAvatar(props:any){
     const { userState, getCurrentUser, logout } = useCurrentUser();
-    const { companiesByUser, getCompany, listCompanies } = useCompanies();
+    const { companiesByUser } = useCompanies();
 
     console.log(userState)
     useEffect(() => {

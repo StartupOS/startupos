@@ -56,10 +56,10 @@ function App() {
        for(let a:number=0; a<i.length; a++){
         _chatlio[ i[a] ]||(_chatlio[i[a]]=e(i[a]));
        }
+      // @ts-ignore;
+      window._chatlio = _chatlio
   };
-  chatlio();
-  // @ts-ignore;
-  window._chatlio = _chatlio
+  window.setTimeout(chatlio, 2000);
   return (
     <div className="App">
       <InstitutionsProvider>

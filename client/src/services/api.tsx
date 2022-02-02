@@ -7,7 +7,7 @@ import { DuplicateItemToastMessage } from '../components';
 import { CompanyType, UserType, MessageType } from '../components/types';
 
 
-const baseURL = '/';
+const baseURL = '/api';
 
 const api = axios.create({
   baseURL,
@@ -17,6 +17,17 @@ const api = axios.create({
     Expires: '0',
   },
 });
+
+// needed for the route without an interceptor
+const api2 = axios.create({
+  baseURL,
+  headers: {
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    Pragma: 'no-cache',
+    Expires: '0',
+  },
+});
+
 api.interceptors.request.use((config)=>{
   const token = localStorage.getItem('token') || '';
   if(config && config.headers) {
@@ -126,6 +137,13 @@ export const exchangeMergePublicToken = (companyId: number, publicToken:string) 
 export const updateEmployees = (companyId: number) => api.post(`/employees/${companyId}/update`);
 export const listEmployees = (companyId:number) => api.get(`/employees/${companyId}`);
 export const retrieveEmployee = (companyId:number, employeeId: number) => api.get(`/employees/${companyId}/${employeeId}`);
+
+// permissions
+export const getPermissions = ()=> api.get('/permissions');
+
+// LinkedIn Code
+export const getLinkedInCredentials = (code:string) => api2.get(`/login/LinkedInCode?code=${code}`)
+
 
 // misc
 export const postLinkEvent = (event: any) => api.post(`/link-event`, event);
