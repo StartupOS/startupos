@@ -6,7 +6,8 @@ import Touchable from 'plaid-threads/Touchable';
 
 import { LinkButton } from '.';
 import { useOnClickOutside } from '../hooks';
-import { useLink } from '../services';
+import { useCompanies, useLink } from '../services';
+import { CompanyType } from './types';
 
 interface Props {
   setBadStateShown: boolean;
@@ -14,10 +15,18 @@ interface Props {
   userId: number;
   itemId: number;
   handleDelete: () => void;
+  canEdit: boolean
 }
 
 // Provides for testing of the ITEM_LOGIN_REQUIRED webhook and Link update mode
 export function MoreDetails(props: Props) {
+  const { companiesByUser, getCompany, listCompanies } = useCompanies();
+  const [ currentCompany, setCurrentCompany ] = useState<CompanyType|null>(null);
+
+  useEffect(()=>{
+    setCurrentCompany(companiesByUser.currentCompany);
+  },[companiesByUser, listCompanies, getCompany])
+
   const [menuShown, setmenuShown] = useState(false);
   const [token, setToken] = useState('');
   const refToButton = useRef<HTMLDivElement>(null);
@@ -31,8 +40,9 @@ export function MoreDetails(props: Props) {
   const { generateLinkToken, linkTokens } = useLink();
   // creates new link token for each item in bad state
   useEffect(() => {
-    generateLinkToken(props.userId, props.itemId); // itemId is set because link is in update mode
-  }, [props.userId, props.itemId, generateLinkToken]);
+    if(currentCompany)
+      generateLinkToken(currentCompany.id, props.itemId); // itemId is set because link is in update mode
+  }, [currentCompany, currentCompany?.id, props.itemId, generateLinkToken]);
 
   useEffect(() => {
     setToken(linkTokens.byItem[props.itemId]);
@@ -48,9 +58,12 @@ export function MoreDetails(props: Props) {
   ) : token != null && token.length > 0 ? (
     // item is in "bad" state;  launch link to login and return to "good" state
     <div>
-      <LinkButton userId={props.userId} itemId={props.itemId} token={token}>
-        Update Login
-      </LinkButton>
+      {
+        currentCompany && props.canEdit &&
+        <LinkButton companyId={currentCompany.id} itemId={props.itemId} token={token}>
+          Update Login
+        </LinkButton>
+      }
     </div>
   ) : (
     <></>
@@ -71,9 +84,11 @@ export function MoreDetails(props: Props) {
       <Dropdown isOpen={menuShown} target={icon}>
         {linkChoice}
 
-        <Touchable className="menuOption2" onClick={props.handleDelete}>
-          Remove
-        </Touchable>
+        { props.canEdit ? (
+          <Touchable className="menuOption2" onClick={props.handleDelete}>
+            Remove
+          </Touchable>
+        ):<></>}
       </Dropdown>
     </div>
   );

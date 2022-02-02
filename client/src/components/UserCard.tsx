@@ -4,7 +4,7 @@ import Button from 'plaid-threads/Button';
 import Touchable from 'plaid-threads/Touchable';
 
 import { UserDetails, LinkButton } from '.';
-import { useItems, useUsers, useLink } from '../services';
+import {   useCompanies, useUsers, useLink } from '../services';
 import { UserType } from './types';
 
 interface Props {
@@ -15,37 +15,50 @@ interface Props {
 }
 
 export default function UserCard(props: Props) {
-  const [numOfItems, setNumOfItems] = useState(0);
+  const [numOfCompanies, setNumOfCompanies] = useState(0);
+  const { companiesByUser, getCompany, listCompanies } = useCompanies();
+
   const [token, setToken] = useState('');
   const [hovered, setHovered] = useState(false);
-  const { itemsByUser, getItemsByUser } = useItems();
   const { deleteUserById } = useUsers();
   const { generateLinkToken, linkTokens } = useLink();
 
-  // update data store with the user's items
-  useEffect(() => {
+  useEffect(()=>{
     if (props.userId) {
-      getItemsByUser(props.userId, true);
+          listCompanies();
     }
-  }, [getItemsByUser, props.userId]);
-
-  // update no of items from data store
-  useEffect(() => {
-    if (itemsByUser[props.userId] != null) {
-      setNumOfItems(itemsByUser[props.userId].length);
-    } else {
-      setNumOfItems(0);
+  },[props.userId])
+  useEffect(()=>{
+    if (props.userId && companiesByUser && companiesByUser.companies) {
+        console.log(companiesByUser);
+        setNumOfCompanies(companiesByUser.companies.length)
     }
-  }, [itemsByUser, props.userId]);
+  },[props.userId, companiesByUser])
 
-  // creates new link token upon change in user or number of items
-  useEffect(() => {
-    generateLinkToken(props.userId, null); // itemId is null
-  }, [props.userId, numOfItems, generateLinkToken]);
+  // // update data store with the user's items
+  // useEffect(() => {
+  //   if (props.userId) {
+  //     getItemsByUser(props.userId, true);
+  //   }
+  // }, [getItemsByUser, props.userId]);
 
-  useEffect(() => {
-    setToken(linkTokens.byUser[props.userId]);
-  }, [linkTokens, props.userId, numOfItems]);
+  // // update no of items from data store
+  // useEffect(() => {
+  //   if (itemsByUser[props.userId] != null) {
+  //     setNumOfItems(itemsByUser[props.userId].length);
+  //   } else {
+  //     setNumOfItems(0);
+  //   }
+  // }, [itemsByUser, props.userId]);
+
+  // // creates new link token upon change in user or number of items
+  // useEffect(() => {
+  //   generateLinkToken(props.userId, null); // itemId is null
+  // }, [props.userId, numOfItems, generateLinkToken]);
+
+  // useEffect(() => {
+  //   setToken(linkTokens.byUser[props.userId]);
+  // }, [linkTokens, props.userId, numOfItems]);
 
   const handleDeleteUser = () => {
     deleteUserById(props.user.id); // this will delete all items associated with a user
@@ -56,7 +69,7 @@ export default function UserCard(props: Props) {
         <div
           className="hoverable"
           onMouseEnter={() => {
-            if (numOfItems > 0) {
+            if (numOfCompanies > 0) {
               setHovered(true);
             }
           }}
@@ -67,27 +80,19 @@ export default function UserCard(props: Props) {
           <Touchable
             className="user-card-clickable"
             component={HashLink}
-            to={`/user/${props.userId}#itemCards`}
+            to={`/Dashboard#itemCards`}
           >
             <div className="user-card__detail">
               <UserDetails
                 hovered={hovered}
                 user={props.user}
-                numOfItems={numOfItems}
+                numOfCompanies={numOfCompanies}
               />
             </div>
           </Touchable>
         </div>
-        {(props.removeButton || (props.linkButton && numOfItems === 0)) && (
+        {(props.removeButton || (props.linkButton && numOfCompanies === 0)) && (
           <div className="user-card__buttons">
-            {token != null &&
-              token.length > 0 &&
-              props.linkButton &&
-              numOfItems === 0 && (
-                <LinkButton userId={props.userId} token={token} itemId={null}>
-                  Add a Bank
-                </LinkButton>
-              )}
             {props.removeButton && (
               <Button
                 className="remove"
@@ -100,6 +105,7 @@ export default function UserCard(props: Props) {
                 Delete user
               </Button>
             )}
+            
           </div>
         )}
       </div>

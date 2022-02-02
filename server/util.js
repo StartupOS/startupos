@@ -15,9 +15,13 @@ const toArray = input => (isArray(input) ? [...input] : [input]);
  * @param {(Object|Object[])} input a single object or an array of objects.
  * @param {string[]} keysToKeep the keys to keep in the sanitized objects.
  */
-const sanitizeWith = (input, keysToKeep) =>
-  toArray(input).map(obj => pick(obj, keysToKeep));
-
+const sanitizeWith = (input, keysToKeep) => {
+  if (!input || input.length === 0 ){
+    return [];
+  } else {
+    return toArray(input).map(obj => pick(obj, keysToKeep));
+  }
+}
 /**
  * Returns an array of sanitized accounts.
  *
@@ -27,7 +31,7 @@ const sanitizeAccounts = accounts =>
   sanitizeWith(accounts, [
     'id',
     'item_id',
-    'user_id',
+    'organization_id',
     'name',
     'mask',
     'official_name',
@@ -39,6 +43,9 @@ const sanitizeAccounts = accounts =>
     'subtype',
     'created_at',
     'updated_at',
+    'logo',
+    'primary_color',
+    'deleted'
   ]);
 
 /**
@@ -49,7 +56,7 @@ const sanitizeAccounts = accounts =>
 const sanitizeItems = items =>
   sanitizeWith(items, [
     'id',
-    'user_id',
+    'organization_id',
     'plaid_institution_id',
     'status',
     'created_at',
@@ -62,7 +69,7 @@ const sanitizeItems = items =>
  * @param {(Object|Object[])} users a single user or an array of users.
  */
 const sanitizeUsers = users =>
-  sanitizeWith(users, ['id', 'username', 'created_at', 'updated_at']);
+  sanitizeWith(users, ['id', 'username', 'created_at', 'updated_at', 'picture', 'email', 'given_name', 'family_name']);
 
 /**
  * Returns an array of transactions
@@ -74,7 +81,7 @@ const sanitizeTransactions = transactions =>
     'id',
     'account_id',
     'item_id',
-    'user_id',
+    'organization_id',
     'name',
     'type',
     'date',

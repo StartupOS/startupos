@@ -6,7 +6,7 @@ import { UserType } from './types';
 
 interface Props {
   user: UserType;
-  numOfItems: number;
+  numOfCompanies: number;
   hovered: boolean;
 }
 
@@ -21,10 +21,10 @@ const UserDetails = (props: Props) => (
       <p className="value">{formatDate(props.user.created_at)}</p>
     </div>
     <div className="user-card__column-3">
-      <h3 className="heading">Number of banks connected</h3>
+      <h3 className="heading">Number of Companies connected</h3>
       <p className="value">
         {props.hovered ? 'View ' : ''}{' '}
-        {`${props.numOfItems} ${pluralize('bank', props.numOfItems)}`}
+        {`${props.numOfCompanies} ${pluralize('company', props.numOfCompanies)}`}
       </p>
     </div>
   </>

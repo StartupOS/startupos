@@ -4,7 +4,7 @@
 
 const express = require('express');
 const {
-  retrieveAssetsByUser,
+  retrieveAssetsByCompany,
   createAsset,
   deleteAssetByAssetId,
 } = require('../db/queries');
@@ -34,11 +34,12 @@ router.post(
  * @returns {Object[]} an array of properties
  */
 router.get(
-  '/:userId',
+  '/:companyId',
   asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const assets = await retrieveAssetsByUser(userId);
-
+    const { companyId } = req.params;
+    console.log('get assets');
+    const assets = await retrieveAssetsByCompany(companyId);
+    console.log(assets);
     res.json(assets);
   })
 );

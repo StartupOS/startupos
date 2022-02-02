@@ -1,0 +1,276 @@
+@import '~plaid-threads/scss/variables';
+@import '~plaid-threads/scss/colors';
+
+
+div.Avatar {
+    float: right;
+    position: relative !important;
+    top: 2em;
+}
+.SOS_Button{
+    float: right;
+    margin-right: 4em !important;
+    position: relative !important;
+    top: 4em;
+}
+.SOS_icon{
+    height:4rem;
+}
+
+.SOS_Menu{
+    display: block;
+    height: 5em;
+    margin-bottom: 3em;
+}
+
+.SOS_Menu hr{
+    margin: 1em;
+}
+
+.Notifications{
+    float:right;
+    font-size: xx-large;
+    position: relative !important;
+    top: 1em;
+}
+
+div.CompanyCard{
+    width: 100%;
+    border: 1px solid black;
+    padding: 8px;
+    padding-right: 10px;
+    border-radius: 10px;
+    margin: 10px;
+    cursor: pointer;
+    display:grid;
+}
+div.CompanyCard:hover, div.CompanyCard.selected{
+    background-color: $color-action-hover;
+    color:$white;
+}
+
+div.CompanyCard div.CompanyLogo{
+    grid-column-start: 1;
+    grid-column-end:1;
+    grid-row-start: 2;
+    grid-row-end:2;
+    margin-right:7px;
+}
+div.CompanyCard div.CompanyLogo>img{
+    height:5em;
+}
+
+div.CompanyCard div.CompanyName{
+    grid-column-start: 2;
+    grid-column-end:2;
+    grid-row-start: 1;
+    grid-row-end:1;
+    font-weight: bolder;
+    font-size: larger;
+}
+
+div.CompanyCard div.CompanyDescription{
+    grid-column-start: 2;
+    grid-column-end:2;
+    grid-row-start: 2;
+    grid-row-end:2;
+}
+
+div.CompanyCard div.CompanyLocation{
+    grid-column-start: 2;
+    grid-column-end:2;
+    grid-row-start: 3;
+    grid-row-end:3;
+}
+div.CompanyCard div.EmployeeCount{
+    grid-column-start: 2;
+    grid-column-end:2;
+    grid-row-start: 4;
+    grid-row-end:4;
+}
+
+div.CompanyCard div.burnchart{
+    grid-column-start: 4;
+    grid-row-start: 1;
+    grid-row-end: 4;
+}
+
+.Menu_Spacer-large{
+    width:7em;
+    display:inline-block;
+}
+.Menu_Spacer-small{
+    width:1em;
+    display:inline-block;
+}
+
+img.AccountLogo {
+    height: 3em;
+}
+.account-data-row{
+    grid-template-columns: 4em 3fr 2fr !important;
+    border-radius: 5px;
+}
+.accountCards{
+    margin: 1em;
+}
+#accountsWrapper{
+    margin: 1em;
+}
+
+.payrollSummary>div{
+    float:left;
+    width:32%
+}
+
+.item__header{
+    display:block !important;
+    clear:both !important;
+}
+.burnchart .recharts-wrapper{
+    float:left;
+    margin:0px;
+}
+.bars {
+    float:left;
+    margin-top:-1.5em;
+}
+.report_section{
+    margin-top:2em;
+    clear:both;
+}
+
+.payrollSummary div.total{
+    width:100%;
+    text-align: right;
+}
+
+.App {
+    max-width: 110rem !important;
+}
+
+.Menu_Logo{
+    height:4em;
+    margin: 0em 0.5em;
+}
+
+.avatar_popover .MuiPopover-paper{
+    padding:0 2em 2em 2em;
+    border-radius: 5px;
+}
+
+.avatar_popover .MuiPopover-paper h5{
+    position: relative;
+    top: -1em;
+}
+
+.avatar_popover .MuiPopover-paper>a{
+    position: relative;
+    top: -2em;
+}
+
+.avatar_popover .MuiPopover-paper>button{
+    width:100%;
+}
+
+.Warning_Level_0{
+    background-color: $white   
+}
+
+.Warning_Level_1{
+    background-color: $red200;
+}
+.Warning_Level_2{
+    background-color: $red400;
+}
+.Warning_Level_3{
+    background-color: $red600;
+}
+.Warning_Level_4{
+    background-color: $red800;
+}
+.Warning_Level_5{
+    background-color: $red1000;
+}
+.Warning_Level_10{
+    background-color: $red1000;
+}
+#banner{
+    border:0 !important;
+    padding:0 !important;
+    margin: -2em 0 !important;
+}
+
+button{
+    border-radius: 5px !important;
+}
+
+.permissions_sharing{
+    margin:2em 0em;
+}
+.Funders_Grid{
+    font-size: large;
+}
+
+.permissions_sharing table,tr,td,th {
+    // border: 1px solid $blue600;
+    padding:1em;
+}
+
+.PendingShare{
+    display: grid;
+    width: 100%;
+    border: 2px solid $color-border;
+    background-color: $black100;
+    border-radius: 5px;
+    margin-top: 5em;
+    margin-bottom: -1em;
+    padding: 1em;
+}
+
+.PendingShare:hover{
+    background-color: $black200;
+}
+
+.PendingShare .from_user, .PendingShare .to_user{
+    grid-column-start: 2;
+    padding:4.5em;
+}
+.PendingShare .from_org, .PendingShare .to_org{
+    grid-column-start: 1;
+}
+
+.PendingShare .to_org, .PendingShare .to_user{
+    display:none;
+}
+
+.PendingShare .UserMicroCard img{
+    margin-left:1em;
+    height:2em;
+}
+
+.PendingShare .UserMicroCard *{
+    float:left;
+}
+.PendingShare .UserMicroCard .name{
+    margin:0em 1em;
+}
+
+.PendingShare button{
+    margin:1em;
+}
+.PendingShare .permissions{
+    padding:1em;
+}
+
+.PendingShare .OrgCard {
+    display: grid;
+}
+.PendingShare .OrgCard .name, .PendingShare .OrgCard .location{
+    grid-column-start: 2;
+    grid-column-end: 6;
+}
+.PendingShare .OrgCard .logo{
+    grid-column-start: 1;
+    height:4em;
+}

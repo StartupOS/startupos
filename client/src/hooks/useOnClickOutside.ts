@@ -7,7 +7,7 @@ interface Props {
 
 export default function useOnClickOutside(props: Props) {
   const ref = useRef<HTMLDivElement>(null);
-
+  const { callback, ignoreRef} = props;
   useEffect(() => {
     const listener = (event: any) => {
       if (!ref.current || ref.current.contains(event.target)) {
@@ -15,13 +15,13 @@ export default function useOnClickOutside(props: Props) {
       }
 
       if (
-        !props.ignoreRef.current ||
-        props.ignoreRef.current.contains(event.target)
+        !ignoreRef.current ||
+        ignoreRef.current.contains(event.target)
       ) {
         return;
       }
 
-      props.callback();
+      callback();
     };
 
     document.addEventListener('mousedown', listener);
@@ -31,7 +31,7 @@ export default function useOnClickOutside(props: Props) {
       document.removeEventListener('mousedown', listener);
       document.removeEventListener('touchstart', listener);
     };
-  }, [props.callback, props.ignoreRef]);
+  }, [callback, ignoreRef]);
 
   return ref;
 }

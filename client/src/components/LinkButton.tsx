@@ -16,10 +16,11 @@ import { logEvent, logSuccess, logExit } from '../util'; // functions to log and
 import { exchangeToken, setItemState } from '../services/api';
 import { useItems, useLink, useErrors } from '../services';
 
+
 interface Props {
   isOauth?: boolean;
   token: string;
-  userId: number;
+  companyId: number | null;
   itemId?: number | null;
   children?: React.ReactNode;
 }
@@ -30,7 +31,7 @@ interface Props {
 
 export default function LinkButton(props: Props) {
   const history = useHistory();
-  const { getItemsByUser, getItemById } = useItems();
+  const { getItemsByCompany, getItemById } = useItems();
   const { generateLinkToken } = useLink();
   const { setError, resetError } = useErrors();
 
@@ -40,24 +41,24 @@ export default function LinkButton(props: Props) {
     metadata: PlaidLinkOnSuccessMetadata
   ) => {
     // log and save metatdata
-    logSuccess(metadata, props.userId);
+    logSuccess(metadata, props.companyId);
     if (props.itemId != null) {
       // update mode: no need to exchange public token
       await setItemState(props.itemId, 'good');
       getItemById(props.itemId, true);
       // regular link mode: exchange public token for access token
-    } else {
+    } else if(props.companyId) {
       // call to Plaid api endpoint: /item/public_token/exchange in order to obtain access_token which is then stored with the created item
       await exchangeToken(
         publicToken,
         metadata.institution,
         metadata.accounts,
-        props.userId
+        props.companyId
       );
-      getItemsByUser(props.userId, true);
+      getItemsByCompany(props.companyId, true);
     }
     resetError();
-    history.push(`/user/${props.userId}`);
+    history.push(`Dashboard`);
   };
 
   const onExit = async (
@@ -65,9 +66,9 @@ export default function LinkButton(props: Props) {
     metadata: PlaidLinkOnExitMetadata
   ) => {
     // log and save error and metatdata
-    logExit(error, metadata, props.userId);
-    if (error != null && error.error_code === 'INVALID_LINK_TOKEN') {
-      await generateLinkToken(props.userId, props.itemId);
+    logExit(error, metadata, props.companyId);
+    if (error != null && error.error_code === 'INVALID_LINK_TOKEN' && props.companyId) {
+      await generateLinkToken(props.companyId, props.itemId);
     }
     if (error != null) {
       setError(error.error_code, error.display_message || error.error_message);
@@ -113,7 +114,7 @@ export default function LinkButton(props: Props) {
     localStorage.setItem(
       'oauthConfig',
       JSON.stringify({
-        userId: props.userId,
+        userId: props.companyId,
         itemId: props.itemId,
         token: props.token,
       })

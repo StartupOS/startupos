@@ -1,0 +1,55 @@
+ssl_session_cache shared:SSL:2m;
+ssl_session_timeout 5m;
+
+server {
+    listen 10.128.0.2:443 default_server ssl;
+    server_name _;
+    ssl on;
+    ssl_certificate /home/jason/startupos/client/startupos.dev/fullchain1.pem;
+    ssl_certificate_key /home/jason/startupos/client/startupos.dev/privkey1.pem;
+}
+
+server {
+    listen 10.128.0.2:5000 default_server ssl;
+    server_name __;
+    ssl on;
+    ssl_certificate /home/jason/startupos/client/startupos.dev/cert1.pem;
+    ssl_certificate_key /home/jason/startupos/client/startupos.dev/privkey1.pem;
+}
+
+server {
+    listen 10.128.0.2:443 ssl;
+    server_name jason.startupos.dev;
+    location / {
+        proxy_pass http://localhost:8081;
+    }
+    location /api {
+        rewrite ^/api(.+) $1 break;
+        proxy_pass https://localhost:5001;
+    }
+}
+
+server {
+    listen 10.128.0.2:5000 ssl;
+    server_name jason.startupos.dev;
+    location / {
+        proxy_pass https://localhost:5001;
+    }
+}
+
+server {
+    listen 10.128.0.2:443 ssl;
+    server_name beta.startupos.dev;
+    location / {
+         proxy_pass http://localhost:8082;
+    }
+}
+
+server {
+    listen 10.128.0.2:443 ssl;
+    server_name app.startupos.dev;
+    location / {
+        proxy_pass http://localhost:8083;
+    }
+}
+

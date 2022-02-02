@@ -1,12 +1,16 @@
 /**
  * @file Exports the queries for interacting with the database.
  */
-
+const {
+  listUsedInstitutions,
+  updateInstitution
+} = require('./institutions');
 const {
   createAccounts,
   retrieveAccountByPlaidAccountId,
   retrieveAccountsByItemId,
-  retrieveAccountsByUserId,
+  unDeleteAccountById,
+  deleteAccountById
 } = require('./accounts');
 const {
   createItem,
@@ -15,7 +19,6 @@ const {
   retrieveItemByPlaidAccessToken,
   retrieveItemByPlaidInstitutionId,
   retrieveItemByPlaidItemId,
-  retrieveItemsByUser,
   updateItemStatus,
 } = require('./items');
 const { createPlaidApiEvent } = require('./plaidApiEvents');
@@ -23,7 +26,6 @@ const {
   createTransactions,
   retrieveTransactionsByAccountId,
   retrieveTransactionsByItemId,
-  retrieveTransactionsByUserId,
   retrieveTransactionsInDateRange,
   deleteTransactions,
 } = require('./transactions');
@@ -33,21 +35,67 @@ const {
   retrieveUsers,
   retrieveUserById,
   retrieveUserByUsername,
+  createLinkedInUser
 } = require('./users');
 const { createLinkEvent } = require('./linkEvents');
 
 const {
   createAsset,
-  retrieveAssetsByUser,
+  retrieveAssetsByCompany,
   deleteAssetByAssetId,
 } = require('./assets');
+
+const {
+  createCompany,
+  listCompanies,
+  retrieveCompany,
+  updateCompany,
+  deleteCompany,
+  retrieveTransactionsByCompanyId,
+  retrieveItemsByCompany,
+  retrieveAccountsByCompanyId,
+  updateSharing,
+  setRiskScore,
+  getOwnedOrg,
+  hasPermissions,
+  grantPermissions,
+  grantPermissionsToOrg,
+  revokePermissions,
+  revokePermissionsFromOrg,
+  makeSharingTarget,
+  revokeSharingTarget,
+  listFunders,
+  companiesWithPermissions,
+  retrieveCompaniesSharingWithMe,
+  retrieveCompaniesIShareWith,
+} = require('./companies');
+
+const {
+  createMergeToken,
+  retrieveMergeTokens
+} = require('./merge');
+
+const {
+  upsertEmployees,
+  listEmployees,
+  retrieveEmployee
+} = require('./employees');
+
+const {
+  getMessages,
+  createMessage,
+  retrieveMessage,
+  updateMessage,
+  deleteMessage
+} = require('./messages');
 
 module.exports = {
   // accounts
   createAccounts,
   retrieveAccountByPlaidAccountId,
   retrieveAccountsByItemId,
-  retrieveAccountsByUserId,
+  deleteAccountById,
+  unDeleteAccountById,
   // items
   createItem,
   deleteItem,
@@ -55,7 +103,6 @@ module.exports = {
   retrieveItemByPlaidAccessToken,
   retrieveItemByPlaidInstitutionId,
   retrieveItemByPlaidItemId,
-  retrieveItemsByUser,
   updateItemStatus,
   // plaid api events
   createPlaidApiEvent,
@@ -63,7 +110,6 @@ module.exports = {
   createTransactions,
   retrieveTransactionsByAccountId,
   retrieveTransactionsByItemId,
-  retrieveTransactionsByUserId,
   retrieveTransactionsInDateRange,
   deleteTransactions,
   // users
@@ -72,10 +118,50 @@ module.exports = {
   retrieveUserById,
   retrieveUserByUsername,
   retrieveUsers,
+  createLinkedInUser,
   // assets
   createAsset,
-  retrieveAssetsByUser,
+  retrieveAssetsByCompany,
   deleteAssetByAssetId,
   // link events
   createLinkEvent,
+  // companies
+  createCompany,
+  listCompanies,
+  retrieveCompany,
+  updateCompany,
+  deleteCompany,
+  retrieveTransactionsByCompanyId,
+  retrieveItemsByCompany,
+  retrieveAccountsByCompanyId,
+  updateSharing,
+  makeSharingTarget,
+  revokeSharingTarget,
+  getOwnedOrg,
+  setRiskScore,
+  hasPermissions,
+  grantPermissions,
+  grantPermissionsToOrg,
+  revokePermissions,
+  revokePermissionsFromOrg,
+  listFunders,
+  companiesWithPermissions,
+  retrieveCompaniesSharingWithMe,
+  retrieveCompaniesIShareWith,
+  // institutions
+  listUsedInstitutions,
+  updateInstitution,
+  // Merge Account Tokens
+  createMergeToken,
+  retrieveMergeTokens,
+  // Employees
+  upsertEmployees,
+  listEmployees,
+  retrieveEmployee,
+  // Messages
+  getMessages,
+  createMessage,
+  retrieveMessage,
+  updateMessage,
+  deleteMessage
 };

@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 /**
  * @file Defines all routes for the Users route.
  */
@@ -25,6 +27,31 @@ router.post(
     } else {
       res.json(null);
     }
+  })
+);
+
+router.post(
+  '/me',
+  asyncWrapper(async (req, res) => {
+    // const user = req.body;
+    console.log('POST /me');
+    let user = await req.user;
+    console.log(user);
+    try{
+      if (user != null) {
+        user.tiat = Date.now();
+        const token = jwt.sign(user, 'BOTTOM_SECRET', {expiresIn:12*60*60});
+        user.token=token;
+        console.log(user);
+        res.json(sanitizeUsers(user));
+      } else {
+        console.log('no match')
+        res.json(null);
+      }
+    } catch (ex) {
+      console.log(ex);
+    }
+    
   })
 );
 

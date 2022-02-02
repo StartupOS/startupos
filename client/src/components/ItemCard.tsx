@@ -21,6 +21,7 @@ const PLAID_ENV = process.env.REACT_APP_PLAID_ENV || 'sandbox';
 interface Props {
   item: ItemType;
   userId: number;
+  canEdit: boolean
 }
 
 const ItemCard = (props: Props) => {
@@ -32,6 +33,7 @@ const ItemCard = (props: Props) => {
     oauth: false,
     products: [],
     country_codes: [],
+    routing_numbers: []
   });
   const [showAccounts, setShowAccounts] = useState(false);
 
@@ -65,9 +67,11 @@ const ItemCard = (props: Props) => {
     setItemToBadState(id);
   };
   const handleDeleteItem = () => {
-    deleteItemById(id, props.userId);
-    deleteAccountsByItemId(id);
-    deleteTransactionsByItemId(id);
+    if(props.canEdit){
+      deleteItemById(id, props.userId);
+      deleteAccountsByItemId(id);
+      deleteTransactionsByItemId(id);
+    }
   };
 
   const cardClassNames = showAccounts
@@ -112,6 +116,7 @@ const ItemCard = (props: Props) => {
           handleSetBadState={handleSetBadState}
           userId={props.userId}
           itemId={id}
+          canEdit={props.canEdit}
         />
       </div>
       {showAccounts && accounts.length > 0 && (

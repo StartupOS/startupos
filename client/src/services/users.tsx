@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useMemo,
@@ -12,7 +12,6 @@ import omit from 'lodash/omit';
 import { toast } from 'react-toastify';
 
 import { UserType } from '../components/types';
-import { useAccounts, useItems, useTransactions } from '.';
 import {
   getUsers as apiGetUsers,
   getUserById as apiGetUserById,
@@ -39,14 +38,12 @@ const UsersContext = createContext<UsersContextShape>(
   initialState as UsersContextShape
 );
 
+
 /**
  * @desc Maintains the Users context state and provides functions to update that state.
  */
 export function UsersProvider(props: any) {
   const [usersById, dispatch] = useReducer(reducer, {});
-  const { deleteAccountsByUserId } = useAccounts();
-  const { deleteItemsByUserId } = useItems();
-  const { deleteTransactionsByUserId } = useTransactions();
 
   const hasRequested = useRef<{
     all: Boolean;
@@ -63,7 +60,7 @@ export function UsersProvider(props: any) {
     try {
       const { data: payload } = await apiAddNewUser(username);
       dispatch({ type: 'SUCCESSFUL_GET', payload: payload });
-    } catch (err) {
+    } catch (err:any) {
       const { response } = err;
       if (response && response.status === 409) {
         toast.error(`Username ${username} already exists`);
@@ -105,13 +102,10 @@ export function UsersProvider(props: any) {
   const deleteUserById = useCallback(
     async id => {
       await apiDeleteUserById(id); // this will delete all items associated with user
-      deleteItemsByUserId(id);
-      deleteAccountsByUserId(id);
-      deleteTransactionsByUserId(id);
       dispatch({ type: 'SUCCESSFUL_DELETE', payload: id });
       delete hasRequested.current.byId[id];
     },
-    [deleteItemsByUserId, deleteAccountsByUserId, deleteTransactionsByUserId]
+    []
   );
 
   /**

@@ -16,7 +16,7 @@ import { TransactionType } from '../components/types';
 import {
   getTransactionsByAccount as apiGetTransactionsByAccount,
   getTransactionsByItem as apiGetTransactionsByItem,
-  getTransactionsByUser as apiGetTransactionsByUser,
+  getTransactionsByCompany as apiGetTransactionsByCompany,
 } from './api';
 import { Dictionary } from 'lodash';
 
@@ -31,16 +31,16 @@ type TransactionsAction =
       payload: TransactionType[];
     }
   | { type: 'DELETE_BY_ITEM'; payload: number }
-  | { type: 'DELETE_BY_USER'; payload: number };
+  | { type: 'DELETE_BY_COMPANY'; payload: number };
 
 interface TransactionsContextShape extends TransactionsState {
   dispatch: Dispatch<TransactionsAction>;
   transactionsByAccount: Dictionary<any>;
   getTransactionsByAccount: (accountId: number, refresh?: boolean) => void;
   deleteTransactionsByItemId: (itemId: number) => void;
-  deleteTransactionsByUserId: (userId: number) => void;
-  transactionsByUser: Dictionary<any>;
-  getTransactionsByUser: (userId: number) => void;
+  deleteTransactionsByCompanyId: (companyId: number) => void;
+  transactionsByCompany: Dictionary<any>;
+  getTransactionsByCompany: (company: number) => void;
   transactionsByItem: Dictionary<any>;
 }
 const TransactionsContext = createContext<TransactionsContextShape>(
@@ -84,10 +84,10 @@ export function TransactionsProvider(props: any) {
   }, []);
 
   /**
-   * @desc Requests all Transactions that belong to an individual User.
+   * @desc Requests all Transactions that belong to an individual Company.
    */
-  const getTransactionsByUser = useCallback(async userId => {
-    const { data: payload } = await apiGetTransactionsByUser(userId);
+  const getTransactionsByCompany = useCallback(async companyId => {
+    const { data: payload } = await apiGetTransactionsByCompany(companyId);
     dispatch({ type: 'SUCCESSFUL_GET', payload: payload });
   }, []);
 
@@ -100,11 +100,11 @@ export function TransactionsProvider(props: any) {
   }, []);
 
   /**
-   * @desc Will Delete all transactions that belong to an individual User.
+   * @desc Will Delete all transactions that belong to an individual Company.
    * There is no api request as apiDeleteItemById in items delete all related transactions
    */
-  const deleteTransactionsByUserId = useCallback(userId => {
-    dispatch({ type: 'DELETE_BY_USER', payload: userId });
+  const deleteTransactionsByCompanyId = useCallback(companyId => {
+    dispatch({ type: 'DELETE_BY_COMPANY', payload: companyId });
   }, []);
 
   /**
@@ -120,21 +120,21 @@ export function TransactionsProvider(props: any) {
       transactionsById,
       transactionsByAccount: groupBy(allTransactions, 'account_id'),
       transactionsByItem: groupBy(allTransactions, 'item_id'),
-      transactionsByUser: groupBy(allTransactions, 'user_id'),
+      transactionsByCompany: groupBy(allTransactions, 'organization_id'),
       getTransactionsByAccount,
       getTransactionsByItem,
-      getTransactionsByUser,
+      getTransactionsByCompany,
       deleteTransactionsByItemId,
-      deleteTransactionsByUserId,
+      deleteTransactionsByCompanyId,
     };
   }, [
     dispatch,
     transactionsById,
     getTransactionsByAccount,
     getTransactionsByItem,
-    getTransactionsByUser,
+    getTransactionsByCompany,
     deleteTransactionsByItemId,
-    deleteTransactionsByUserId,
+    deleteTransactionsByCompanyId,
   ]);
 
   return <TransactionsContext.Provider value={value} {...props} />;
@@ -158,10 +158,10 @@ function reducer(state: TransactionsState, action: TransactionsAction | any) {
         state,
         transaction => transaction.item_id === action.payload
       );
-    case 'DELETE_BY_USER':
+    case 'DELETE_BY_COMPANY':
       return omitBy(
         state,
-        transaction => transaction.user_id === action.payload
+        transaction => transaction.company_id === action.payload
       );
     default:
       console.warn('unknown action: ', action.type, action.payload);

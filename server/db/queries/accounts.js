@@ -123,8 +123,56 @@ const retrieveAccountsByUserId = async userId => {
   return accounts;
 };
 
+// Only support soft deletion
+const deleteAccountById = async q =>{
+  const {accountId, userId} = q;
+  const query = {
+    text: `
+      update accounts_table as a
+      set 
+        deleted=true
+      from 
+        items_table as i,
+        organizations_table as o
+      where 
+        a.item_id = i.id and
+        a.id=$1 and 
+        o.owner=$2 and
+        i.organization_id = o.id
+      returning *
+    `,
+    values:[accountId, userId]
+  }
+  const { rows } = await db.query(query);
+  return rows;
+}
+const unDeleteAccountById = async q =>{
+  const {accountId, userId} = q;
+  const query = {
+    text: `
+      update accounts_table as a
+      set 
+        deleted=false
+      from 
+        items_table as i,
+        organizations_table as o
+      where 
+        a.item_id = i.id and
+        a.id=$1 and 
+        o.owner=$2 and
+        i.organization_id = o.id
+      returning *
+    `,
+    values:[accountId, userId]
+  }
+  const { rows } = await db.query(query);
+  return rows;
+}
+
 module.exports = {
   createAccounts,
+  deleteAccountById,
+  unDeleteAccountById,
   retrieveAccountByPlaidAccountId,
   retrieveAccountsByItemId,
   retrieveAccountsByUserId,

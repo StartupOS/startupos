@@ -33,10 +33,10 @@ const createAsset = async (userId, description, value) => {
  * @param {number} userId the ID of the user.
  * @returns {Object[]} an array of assets.
  */
-const retrieveAssetsByUser = async userId => {
+const retrieveAssetsByCompany = async companyId => {
   const query = {
-    text: 'SELECT * FROM assets WHERE user_id = $1',
-    values: [userId],
+    text: 'SELECT * FROM assets WHERE organization_id = $1',
+    values: [companyId],
   };
   const { rows: assets } = await db.query(query);
   return assets;
@@ -59,6 +59,6 @@ const deleteAssetByAssetId = async assetId => {
 
 module.exports = {
   createAsset,
-  retrieveAssetsByUser,
+  retrieveAssetsByCompany,
   deleteAssetByAssetId,
 };

@@ -3,6 +3,7 @@
  */
 
 const usersRouter = require('./users');
+const loginRouter = require('./login');
 const sessionsRouter = require('./sessions');
 const itemsRouter = require('./items');
 const accountsRouter = require('./accounts');
@@ -12,6 +13,11 @@ const linkEventsRouter = require('./linkEvents');
 const unhandledRouter = require('./unhandled');
 const linkTokensRouter = require('./linkTokens');
 const assetsRouter = require('./assets');
+const companyRouter = require('./companies');
+const mergeRouter = require('./merge');
+const employeeRouter = require('./employees');
+const messagesRouter = require('./messages');
+
 
 module.exports = {
   usersRouter,
@@ -24,4 +30,9 @@ module.exports = {
   unhandledRouter,
   sessionsRouter,
   assetsRouter,
+  companyRouter,
+  mergeRouter,
+  employeeRouter,
+  messagesRouter,
+  loginRouter
 };
