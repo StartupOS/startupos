@@ -450,7 +450,7 @@ create table if not exists insurance_table(
   policy_type text not null,
   document text not null,
   provider int not null references insurance_provider_table(id) on delete set null
-)
+);
 
 create table if not exists insurance_provider_table(
   id SERIAL PRIMARY KEY,
@@ -462,7 +462,7 @@ create table if not exists insurance_provider_table(
   city text,
   state text,
   zip text
-)
+);
 
 create table if not exists org_relations(
   id SERIAL PRIMARY KEY,
@@ -472,7 +472,7 @@ create table if not exists org_relations(
   object int not null references organizations_table(id) on delete cascade,
   created_at timestamptz,
   updated_at timestamptz
-)
+);
 
 CREATE TRIGGER org_relations_updated_at_timestamp
 BEFORE UPDATE ON org_relations

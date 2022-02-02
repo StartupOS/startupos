@@ -32,13 +32,14 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "PORT=443 react-scripts start",
+    "start": "PORT=8082 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src -c .eslintrc --ext js,jsx",
     "startLocal": "sudo /home/jason/.nvm/versions/node/v14.18.1/bin/npm start",
-    "sL": "PORT=8081 /home/jason/.nvm/versions/node/v14.18.1/bin/node /home/jason/startupos/client/node_modules/react-scripts/scripts/start.js"
+    "sL": "PORT=8081 /home/jason/.nvm/versions/node/v14.18.1/bin/node /home/jason/startupos/client/node_modules/react-scripts/scripts/start.js",
+    "sB": "PORT=8082 /home/jason/.nvm/versions/node/v14.18.1/bin/node /home/jason/beta/client/node_modules/react-scripts/scripts/start.js"
   },
   "eslintConfig": {
     "extends": "react-app"
