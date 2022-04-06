@@ -20,7 +20,9 @@ interface CurrentUserState {
   currentUser: UserType;
   newUser: string | null;
 }
-
+declare global {
+  interface Window { blockReq: boolean; }
+}
 const initialState = {
   currentUser: {},
   newUser: null,
@@ -154,6 +156,7 @@ export function CurrentUserProvider(props: any) {
 function reducer(state: CurrentUserState, action: CurrentUserAction | any) {
   switch (action.type) {
     case 'SUCCESSFUL_GET':
+      console.log(action.payload)
       if(action.payload && action.payload.token) localStorage.setItem('token', action.payload.token);
       return {
         currentUser: action.payload,
@@ -200,8 +203,11 @@ export default function useCurrentUser() {
   
   
   const code = getCodeFromWindowURL( window.location.href );
-  if(code)
+  
+  if(code && !window.blockReq){
+    window.blockReq = true;
     getUserCredentials(code);
+  }
   
   
   if (!context) {

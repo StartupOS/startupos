@@ -31,8 +31,8 @@ export default function SOSAvatar(props:any){
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
-    const displayName = userState.currentUser.given_name+" "+userState.currentUser.family_name;
     if(userState && userState.currentUser && userState.currentUser.username){
+        const displayName = userState.currentUser.given_name+" "+userState.currentUser.family_name;
         console.log(userState.currentUser);
         return (
             <div className="Avatar">

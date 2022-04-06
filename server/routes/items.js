@@ -40,9 +40,11 @@ router.post(
     const user = await req.user;
     const userId = user.id
     const { publicToken, institutionId, userId:organizationId} = req.body;
-    
+    console.log("USERID:", userId);
+    console.log("Organization ID:", organizationId);
     // Ensure user has permission to create Links (is owner of org and org exists)
     const targetCompany = await retrieveCompany({userId, companyId:organizationId});
+    console.log("targetCompany:");
     console.log(targetCompany);
     if(!targetCompany){
       throw new Boom('Unauthorized Request', {

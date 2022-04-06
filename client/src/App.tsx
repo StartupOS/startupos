@@ -32,7 +32,13 @@ import { MessagesProvider } from './services/messages'
 import './App.scss';
 import './StartupOS.scss';
 import './Custom.scss';
-
+declare global {
+  interface Window { 
+    _chatlio: any;
+    chatlio: ()=>void;
+    ChatlioReact: any;
+  }
+}
 function App() {
   toast.configure({
     autoClose: 8000,
@@ -42,24 +48,18 @@ function App() {
     hideProgressBar: true,
   });
 
-  // @ts-ignore
-  const _chatlio:any = {};
-  // @ts-ignore
+  window._chatlio = window._chatlio || {}
   function chatlio(){ 
        var t=document.getElementById("chatlio-widget-embed");
-      //  @ts-ignore
-       if(t&&window.ChatlioReact&&_chatlio.init) 
-        //  @ts-ignore
-        return void _chatlio.init(t,ChatlioReact);
-       const e = function(t:string){return function(...args:string[]){_chatlio.push([t].concat(args)) }};
+       if(t&&window.ChatlioReact&&window._chatlio.init) 
+        return void window._chatlio.init(t,window.ChatlioReact);
+       const e = function(t:string){return function(...args:string[]){window._chatlio.push([t].concat(args)) }};
        const i:string[] = ["configure","identify","track","show","hide","isShown","isOnline", "page", "open", "showOrHide"];
        for(let a:number=0; a<i.length; a++){
-        _chatlio[ i[a] ]||(_chatlio[i[a]]=e(i[a]));
+        window._chatlio[ i[a] ]||(window._chatlio[i[a]]=e(i[a]));
        }
-      // @ts-ignore;
-      window._chatlio = _chatlio
   };
-  window.setTimeout(chatlio, 2000);
+  window.setTimeout(chatlio, 3000);
   return (
     <div className="App">
       <InstitutionsProvider>

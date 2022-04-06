@@ -355,7 +355,7 @@ const retrieveCompany = async q => {
     const query = {
         text: `select o.* 
         from organizations_table o
-        join organization_memberships m
+        full outer join organization_memberships m
         on m.organization_id=o.id
         where 
           o.id=$2 and
@@ -436,7 +436,7 @@ const deleteCompany = async q => {
 const updateCompany = async q => {
     const {userId, company} = q
     const {
-        companyId,
+        id:companyId,
         name, 
         ein, 
         description, 
@@ -448,6 +448,7 @@ const updateCompany = async q => {
         country,
         owner
     } = company;
+    console.log("companyId", companyId)
     const query = {
       // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
       text: `Update organizations_table 

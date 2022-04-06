@@ -110,7 +110,13 @@ io.on('connection', socket => {
 app.get('/test', (req, res) => {
   res.send('test response');
 });
-
+// I don't know why I have to do this, but NGINX is awful
+app.all('/api/*', (req,res,next)=>{
+  const newPath = '/'+req.path.slice(5);
+  console.log(req.path, 'should have been redirected to ', newPath);
+  req.url=newPath;
+  return app._router.handle(req,res, next)
+})
 app.use('/login', loginRouter);
 app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
 app.use('/sessions', passport.authenticate('jwt', { session: false }), sessionsRouter);
@@ -131,3 +137,5 @@ app.use('*', unhandledRouter);
 // https://github.com/expressjs/express/issues/2718
 app.use(errorHandler);
 console.log(`listening on ${PORT}`)
+console.log('Right Server');
+console.log('updated');

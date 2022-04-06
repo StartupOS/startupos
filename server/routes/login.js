@@ -93,7 +93,11 @@ const urlToGetUserEmail = 'https://api.linkedin.com/v2/clientAwareMemberHandles?
 async function getAccessToken(code) {
   console.log('1.1')
   if(codes[code]){
-
+    if(codes[code] === true ){
+      throw new Error('Narp narp narp')
+    } else {
+      return codes[code]
+    }
   }
   codes[code]=true;
 
@@ -118,6 +122,7 @@ async function getAccessToken(code) {
   const data = await response.json();
   console.log(data);
   const accessToken = data["access_token"];
+  codes[code]=accessToken;
   return accessToken;
 }
 

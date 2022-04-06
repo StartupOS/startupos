@@ -207,6 +207,8 @@ export interface CompanyCardProps{
   accounts: AccountType[];
   transactions: TransactionType[];
   selected:CompanyType|null;
+  isOwned:boolean;
+  toggleForm:()=>void;
   selectCompany:(company:CompanyType|null)=>void;
 }
 export interface ExtendedCompanyType extends CompanyType{

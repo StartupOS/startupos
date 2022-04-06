@@ -58,14 +58,21 @@ const EmployeesPage = ({ match }: RouteComponentProps<RouteInfo>) => {
 
     useEffect(()=>{
       const cId = companiesByUser.currentCompany?.id;
+      const uId = userState.currentUser.id;
       const owner = companiesByUser.currentCompany?.owner;
-      const isOwner = userId && userId == owner;
 
-      console.log(cId);
-      console.log(owner, '==', userId);
-      if(cId && isOwner)
+      const isOwner = uId && uId == owner;
+
+      console.log('company id:', cId);
+      console.log('owner:', owner, '== userId:', uId);
+      if(cId && isOwner) {
         generateLinkToken(cId);
-    },[generateLinkToken, companiesByUser, userState])
+      } else {
+        console.log('not generating merge link token');
+        console.log('current user:');
+        console.log(userState.currentUser);
+      }
+    },[generateLinkToken, companiesByUser.currentCompany, userState.currentUser])
   
     useEffect(()=>{
       const cId = companiesByUser.currentCompany?.id;

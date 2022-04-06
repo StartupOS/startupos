@@ -10,6 +10,8 @@ import {
 import { BurnChart } from './'
 import DomainDisabledIcon from '@mui/icons-material/DomainDisabled';
 import colors from 'plaid-threads/scss/colors';
+import EditIcon from '@mui/icons-material/Edit';
+import { Button } from '@mui/material';
 
 
 
@@ -39,6 +41,11 @@ export default function CompaniesCard(props:CompanyCardProps){
     reds.reverse();
     console.log(company.risk_score);
     const warningClasses="Warning_Level_"+Math.min(company.risk_score, 10);
+    function editClick(){
+        const newCo = s?null:company
+        props.selectCompany(newCo);
+        props.toggleForm();
+    }
     return (
         <div 
             className={"CompanyCard" + (classes + " " + warningClasses)} 
@@ -66,6 +73,15 @@ export default function CompaniesCard(props:CompanyCardProps){
                 height={200}
                 hideLine={true}
             />
+            {   props.isOwned &&
+                (<Button 
+                    className="CompanyEdit" 
+                    variant="contained"
+                    onClick={editClick}
+                >
+                    <EditIcon fontSize="large"/>
+                </Button>)
+            }
         </div>
     );
 }

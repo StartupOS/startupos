@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button from 'plaid-threads/Button';
 import TextInput from 'plaid-threads/TextInput';
+import TextField from '@mui/material/TextField';
 
 import { useCompanies } from '../services';
 import { CompanyType } from './types';
@@ -9,6 +10,7 @@ import { CompanyType } from './types';
 
 interface Props {
   hideForm: () => void;
+  company?: CompanyType;
 }
 enum fieldNames {
   id="id",
@@ -23,7 +25,9 @@ enum fieldNames {
   country="country",
   owner="owner"
 }
-const c:CompanyType={
+const env = process.env.REACT_APP_ENV||'alpha'
+
+const c:CompanyType= {
     id: 0,
     name:'Awesome Co',
     ein: '00-0000000',
@@ -42,13 +46,18 @@ const c:CompanyType={
 
 
 const AddCompanyForm = (props: Props) => {
-    const { createCompany, listCompanies } = useCompanies();
-    const [company, setCompany] = useState<CompanyType>(c)  
+    const { createCompany, updateCompany, listCompanies } = useCompanies();
+    const [company, setCompany] = useState<CompanyType>(props.company ||c)  
   
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         if(company){
-            createCompany(company);
+            if(props.company){
+              console.log(company)
+              updateCompany(company)
+            } else {
+              createCompany(company);
+            }
         }
         props.hideForm();
     };
@@ -70,24 +79,32 @@ const AddCompanyForm = (props: Props) => {
     placeholder: string;
     value: string | number;
     required: boolean
-    id: string
+    id: string;
+    multiline?:boolean;
   }
 
   function FormField(props: FieldProps){
+    console.log(props.id, props.multiline)
         return ( company &&
             (<div className={"add-user__column-" + props.index}>
                 <p className="value add-user__value">
                     {props.description}
                 </p>
-                <TextInput
+                {}
+                <TextField
                     id={props.id}
                     name={props.id}
                     required={props.required}
                     autoComplete="off"
-                    className="input_field"
+                    className={props.multiline?"":"input_field"}
                     value={company[props.name]+"" }
                     placeholder={props.placeholder}
                     label={props.id}
+                    multiline={props.multiline}
+                    sx={props.multiline ? {
+                      width:"100ch"
+                    } : {}}
+                    rows={props.multiline ? 3 : undefined}
                     onChange={e => reduceField(props.name, e.target.value)}
                 />
             </div>)
@@ -119,11 +136,12 @@ const AddCompanyForm = (props: Props) => {
             value: company?.description,
             required: false,
             id: "companyDescription",
+            multiline: true
         },
         {
             name: "logo",
             description: 'Logo URL',
-            placeholder: 'https://jason.startupos.dev/lifePreserver.png',
+            placeholder: `https://${env}.startupos.dev/lifePreserver.png`,
             value: company?.logo,
             required: false,
             id: "companyLogo",
@@ -177,16 +195,16 @@ const AddCompanyForm = (props: Props) => {
     });
 
   return (
-    <div className="box addUserForm">
+    <div className="box addCompanyForm">
       <form onSubmit={handleSubmit}>
         <div className="card" style={{display:"block"}}>
           <div className="add-user__column-0">
-            <h3 className="heading add-user__heading">Add a new Company</h3>
+            <h3 className="heading add-user__heading">{props.company?"Edit":"Add a new"} Company</h3>
           </div>
           {fieldEls}
           <div className="add-user__column--1">
             <Button className="add-user__button" centered small type="submit">
-              Add Company
+              {props.company?"Update":"Add"} Company
             </Button>
             <Button
               className="add-user__button"

@@ -3,7 +3,7 @@
   "version": "1.0.7",
   "private": true,
   "scripts": {
-    "start": "node index.js",
+    "start": "/home/jason/.nvm/versions/node/v14.18.1/bin/node ./index.js",
     "debug": "nodemon --inspect=0.0.0.0:9229 index.js",
     "lint": "eslint **/*.js -c .eslintrc.json"
   },

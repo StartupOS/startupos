@@ -15,7 +15,7 @@ import { CompanyType, CompanyCardProps, AccountType, EmployeeType, TransactionTy
 
 export default function CompaniesPage(){
     const [isAdding, hideForm, toggleForm] = useBoolean(false);
-    const { getCurrentUser } = useCurrentUser();
+    const { getCurrentUser, userState } = useCurrentUser();
     const { companiesByUser, listCompanies, updateCompany, deleteCompany, createCompany, selectCompany} = useCompanies();
     const [companies, setCompanies] = useState<CompanyType[]>([]);
     const [selected, setSelected] = useState<CompanyType | null>(null);
@@ -37,6 +37,7 @@ export default function CompaniesPage(){
     },[listCompanies, getCurrentUser]);
 
     useEffect(()=>{
+        console.log(userState.currentUser)
         if(companiesByUser?.companies){
             setCompanies(companiesByUser.companies);
             for(const c of companiesByUser?.companies){
@@ -54,12 +55,15 @@ export default function CompaniesPage(){
     console.log(companiesByUser);
     companies.sort((a,b)=>b.risk_score-a.risk_score);
     const companyCards = companies.map((c)=>{
+        console.log(userState.currentUser)
         const props:CompanyCardProps = {
             company:c,
             employees: employeesByCompany[c.id] ? Object.values(employeesByCompany[c.id]) : [],
             accounts: accountsByCompany[c.id] || [],
             transactions: transactionsByCompany[c.id] || [],
             selected,
+            toggleForm,
+            isOwned:userState.currentUser && c.owner==userState.currentUser.id,
             selectCompany 
         };
         return CompaniesCard(props)});
@@ -69,8 +73,14 @@ export default function CompaniesPage(){
             This is the Companies Page
             You have access to the following companies:
             { companyCards }
-            <Button onClick={toggleForm}> Create a new company </Button>
-            {isAdding && <AddCompanyForm hideForm={hideForm} />}
+            <Button 
+                onClick={(e)=>{
+                    setSelected(null);
+                    toggleForm();
+                }}
+            > Create a new company </Button>
+            {isAdding && selected && <AddCompanyForm hideForm={hideForm} company={selected} />}
+            {isAdding && !selected && <AddCompanyForm hideForm={hideForm} />}
         </div>
     )
 }

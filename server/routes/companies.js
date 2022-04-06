@@ -230,16 +230,23 @@ router.put('/:companyid', asyncWrapper(
         const user = await req.user;
         console.log(2)
         const company = req.body;
+        console.log(company);
         updateRiskScore(company.id)
 
         console.log(3)
         const q = {userId:user.id, company};
+        console.log(q)
         console.log(4)
+
         // update and return this company if it exists and is associated to this user
         const newCompany = await updateCompany(q);
         console.log(5);
-        const newSharing = await updateSharing(q);
+        if(company.shared){
+          q.company=newCompany;
+          const newSharing = await updateSharing(q);
+        }
         console.log(6);
+        console.log(newCompany);
         res.json(newCompany);
     }
 ))

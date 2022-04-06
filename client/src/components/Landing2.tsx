@@ -21,8 +21,8 @@ export default function Landing() {
   return (
     <div>
       <Banner initialSubheading />
-      Please login under the profile icon above. If you don't have an account, one will be created the first time you sign in. Once created,
-      you can add as many example Link items as you like.
+      <div className="subText">Please login under the profile icon above. If you don't have an account, one will be created the first time you sign in. Once created,
+      you can add as many example Link items as you like.</div>
       <div className="btnsContainer">
         {userState.currentUser.username != null && (
           <Button

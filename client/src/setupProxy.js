@@ -15,8 +15,8 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: `https://localhost:${port}`,
-      changeOrigin: true,
+      target: `https://${env}.startupos.dev:${port}`,
+      changeOrigin: false,
     })
   );
 };

@@ -46,7 +46,7 @@ export default function AccountCard(props: Props) {
     }
     return  binary;
 }
-  const bString = _arrayBufferToBase64(props.account.logo.data);
+  const bString = props && props.account.logo ? _arrayBufferToBase64(props.account.logo.data): "";
   return (
     <div>
       <div className="account-data-row" style={{border:'1px solid '+primary_color}}>
