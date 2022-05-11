@@ -109,16 +109,17 @@ const updateMessage = async(message)=>{
     ];
     const {cols, vals, valsLabels} = parseField(message, optionalFields, 2, false);
     
-    const setArr = ["Set"];
+    const setArr = [];
     cols.forEach((c,i)=>{
         setArr.push(c+"="+valsLabels[i]);
     });
-    const setString = setArr.join(`
+    const setString = setArr.join(`,
     `);
     const allVals = [id].concat(vals);
     const query = {
         text: `
             update messages_table
+            set
             ${setString}
             where
             id=$1
@@ -126,7 +127,9 @@ const updateMessage = async(message)=>{
         `,
         values: allVals
     }
+    console.log(query);
     const rows = await db.q(query);
+    console.log(rows);
     return rows;
 }
 

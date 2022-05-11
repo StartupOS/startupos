@@ -64,11 +64,25 @@
 const listCompanies = async userId => {
     const query = {
         text: `
-              select o.* 
+          with v as (
+            select o.* 
               from organizations_table o
               left outer join organization_memberships m
               on m.organization_id=o.id
-              where owner = $1 or (membership_type='viewer' and user_id=$1)`,
+              where 
+                owner = $1 or 
+                (membership_type='viewer' and user_id=$1)
+            )
+          select o.*
+          from organizations_table o
+          inner join org_relations r
+          on r.object = o.id
+          inner join v
+          on r.subject = v.id
+          union
+          select v.*
+          from v
+          `,
         values: [userId]
     }
     const { rows } = await db.query(query);
@@ -163,8 +177,10 @@ const updateSharing = async q =>{
  * @returns {Object} an object containing the arguments.
  */
  const grantPermissionsToOrg = async (orgId, companyId, permissions)=>{
-  for(p in permissions){
-    const query = {
+   console.log('2.2.1')
+  for(p of permissions){
+   console.log('2.2.2')
+   const query = {
       text:` 
         insert into org_relations 
         (subject, object, type) 
@@ -175,8 +191,10 @@ const updateSharing = async q =>{
       values:[orgId, companyId, p]
     }
     await db.q(query);
+    console.log('2.2.3')
   }
-  return {userId, companyId, permissions}
+  console.log('2.2.4')
+  return {orgId, companyId, permissions}
 }
 /**
  * Revokes the permissions to the user on the company
@@ -187,7 +205,7 @@ const updateSharing = async q =>{
  * @returns {Object} an object containing the arguments.
  */
  const revokePermissionsFromOrg = async (orgId, companyId, permissions)=>{
-  for(p in permissions){
+  for(p of permissions){
     const query = {
       text:` 
         delete from org_relations 
@@ -212,7 +230,7 @@ const updateSharing = async q =>{
  * @returns {Object} an object containing the arguments.
  */
  const grantPermissions = async (userId, companyId, permissions)=>{
-  for(p in permissions){
+  for(p of permissions){
     const query = {
       text:` 
         insert into organization_memberships 
@@ -237,7 +255,7 @@ const updateSharing = async q =>{
  * @returns {Object} an object containing the arguments.
  */
  const revokePermissions = async (userId, companyId, permissions)=>{
-  for(p in permissions){
+  for(p of permissions){
     const query = {
       text:` 
         delete from organization_memberships 

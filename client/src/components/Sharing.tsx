@@ -196,12 +196,12 @@ export default function SharingPage(){
     function approveMessageClick(m:ExpandedMessageType){
         console.log('Approve')
         console.log(m);
-        // acceptMessage(m.id);
+        acceptMessage(m.id);
     }
     function rejectMessageClick(m:ExpandedMessageType){
         console.log('Archive')
         console.log(m);
-        // archiveMessage(m.id);
+        archiveMessage(m.id);
     }
 
     console.log(messages);

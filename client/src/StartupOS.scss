@@ -290,3 +290,14 @@ div.subText{
 .addCompanyForm .add-user__column-3 p {
     width: 100%
 }
+
+.MessageContainer .AlertMessage{
+    width: 20rem;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.MessageContainer .AlertMessage:hover{
+    color:blue;
+    background-color: lightcyan;
+}

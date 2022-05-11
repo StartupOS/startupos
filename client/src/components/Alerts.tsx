@@ -3,15 +3,24 @@ import Badge from '@mui/material/Badge';
 import { Popover, Typography, Button } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
-import { useCurrentUser } from '../services';
+import AlertMessage from './AlertMessage'
+import { useCurrentUser, useMessages } from '../services';
 
 
 export default function Alerts() {
   const { userState, getCurrentUser } = useCurrentUser();
+  const { messageState, getMessages } = useMessages()
   console.log(userState)
   useEffect(() => {
       getCurrentUser();
   }, [getCurrentUser]);
+  useEffect(()=>{
+      getMessages();
+      console.log(messageState);
+  },[getMessages])
+  console.log('MESSAGES');
+  console.log(messageState.messages);
+  console.log('React is the devil');
   const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
   const open = Boolean(anchorEl);
 
@@ -28,10 +37,14 @@ export default function Alerts() {
   }
   const id = open ? 'message-popover' : undefined;
   const icon = (<NotificationsIcon color="action" fontSize="inherit" />)
+  const messages = messageState.messages.map(
+      (m, i) =>
+      (<AlertMessage message={m} key={i}/>)
+    );
   return (
     <div className="Notifications">
       
-      <Badge badgeContent={4} color="primary">
+      <Badge badgeContent={messageState.messages.length} color="primary">
         <Button onClick={onClick} size="large" endIcon={icon} />
       </Badge>
       
@@ -48,8 +61,9 @@ export default function Alerts() {
             vertical: 'top',
             horizontal: 'right'
         }}
+        className='MessageContainer'
     >
-        <Typography variant="h2">Message 1</Typography>
+        {messages}
     </Popover>
     </div>
   );
