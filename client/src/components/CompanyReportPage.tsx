@@ -196,6 +196,7 @@ const CompanyReportPage = ({ match }: RouteComponentProps<RouteInfo>) => {
             transactions={transactions} 
             accounts={accounts}
             employees={employees}
+            showPL={true}
           />
           <NetWorth
             accounts={accounts}

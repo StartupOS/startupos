@@ -13,6 +13,7 @@ import {
     ReferenceLine
 } from 'recharts';
 import { TransactionType, AccountType, EmployeeType } from './types'
+import { PLComponent } from './'
 import { payrollBreakDown, capitalizeWords } from '../util'
 import colors from 'plaid-threads/scss/colors';
 import moment  from 'moment';
@@ -30,6 +31,7 @@ interface Props {
   subheading?:string;
   hideLine?:boolean;
   hideHeading?:boolean;
+  showPL?:boolean;
 }
 
 function tx_within(tx:TransactionType, startMonth:Date, endMonth:Date):boolean{
@@ -46,6 +48,7 @@ function txInAccounts(tx:TransactionType, accounts:AccountType[]):boolean{
 
 export default function BurnChart(props: Props) {
   const { transactions, accounts, employees } = props
+  const showPL = !!props.showPL 
   const {
         hourly,
         salaried,
@@ -56,7 +59,8 @@ export default function BurnChart(props: Props) {
         actualMonthlySalaried,
         actualTotal
   } = payrollBreakDown(employees);
-
+  console.log("transactions")
+  console.log(transactions)
   const filterAccounts = (
     accountSubtypes: Array<AccountType['subtype']>
   ): AccountType[] =>
@@ -87,15 +91,23 @@ export default function BurnChart(props: Props) {
   const currentCashBalance = cashAccounts.reduce((p,c)=>p+c.current_balance,0);
   const monthlyBalance:number[] = [currentCashBalance];
   const monthlyDelta:number[] = [];
-  const months=[moment(new Date()).subtract(0,'months').format('MMMM')];
+  const months=[];
   for(let i=0; i<6; i++){
+    months.push(moment(new Date()).subtract(i,'months').format('MMMM'))
     let prev = monthlyBalance[i];
-    let delta = filterTransactions(transactions, cashAccounts, i)
+    const txs= filterTransactions(transactions, cashAccounts, i)
+    let delta = txs
       .reduce((p,c)=>Math.round((p+(c.amount*-1))*100)/100,0);
-    monthlyDelta.push(-delta);
-    monthlyBalance.push(Math.round((prev+delta)*100)/100);
-    months.push(moment(new Date()).subtract(i+1,'months').format('MMMM'))
+    console.log(months[i],':',delta)
+    console.log(txs);
+    monthlyDelta.push(delta);
+    monthlyBalance.push(Math.round((prev-delta)*100)/100);
+    // months.push(moment(new Date()).subtract(i+1,'months').format('MMMM'))
   }
+
+  console.log('Monthly Balances:');
+  console.log(monthlyBalance);
+  console.log(monthlyDelta);
 
   type dataType = {
     name:string;
@@ -105,18 +117,23 @@ export default function BurnChart(props: Props) {
     projected_Balance?:number;
   }
   const data:dataType[] = months.map((m,i)=>{
-        if(i===0){
-            return {
-                name:m,
-                balance:monthlyBalance[i],
-            }
-        } else {
-            return {
-                name:m,
-                balance: monthlyBalance[i],
-                delta: monthlyDelta[i-1],
-            }   
-        }
+        // if(i===5){
+        //     return {
+        //         name:m,
+        //         balance:monthlyBalance[i],
+        //     }
+        // } else {
+        //     return {
+        //         name:m,
+        //         balance: monthlyBalance[i],
+        //         delta: monthlyDelta[i],
+        //     }   
+        // }
+      return {
+          name:m,
+          balance: monthlyBalance[i],
+          delta: monthlyDelta[i],
+      }  
     });
     data.reverse()
 
@@ -128,9 +145,9 @@ export default function BurnChart(props: Props) {
     data[data.length-1].projected_Balance=data[data.length-1].balance;
     const monthsRemaining = Math.max(0, Math.round(currentCashBalance/weightedBurn*10)/10);
     for(let i=0; i<3; i++){
-      let prev = data[i+6].projected_Balance || data[i+6].balance || 0;
-      let delta = data[i+6].projected_Delta || data[i+6].delta || 0;
-      let prevDelta = data[i+5].projected_Delta || data[i+6].delta || 0;
+      let prev = data[i+5].projected_Balance || data[i+5].balance || 0;
+      let delta = data[i+5].projected_Delta || data[i+5].delta || 0;
+      let prevDelta = data[i+4].projected_Delta || data[i+5].delta || 0;
       data.push({
         name: moment(new Date()).add(i+1,'months').format('MMMM'),
         projected_Balance: prev + delta,
@@ -156,10 +173,13 @@ export default function BurnChart(props: Props) {
   const myWidth = props.width!==undefined?props.width:175;
 
   console.log(myColors);
+  // @ts-ignore
+  window["Jason"]=data
 
   return (
     <div className="burnchart report_section">
       {!props.hideHeading && (<h2 className="holdingsHeading">{heading}</h2>)}
+      {showPL && (<PLComponent transactions={transactions} accounts={accounts} />)}
       {props.subheading !==undefined && (<h5>{props.subheading}</h5>)}
       {!props.hideLine && (<LineChart
         data={data}
