@@ -140,8 +140,8 @@ export default function BurnChart(props: Props) {
     console.log(data);
     const avgBurn = monthlyDelta.reduce((p,c)=>p+c,0)/monthlyDelta.length;
     const weightedBurn = (avgBurn + monthlyDelta[1])/2 - actualTotal + projectedTotal;
-    data[data.length-1].projected_Delta=-weightedBurn;
-    data[data.length-2].projected_Delta=data[data.length-2].delta;
+    // data[data.length-1].projected_Delta=-weightedBurn;
+    data[data.length-1].projected_Delta=data[data.length-1].delta;
     data[data.length-1].projected_Balance=data[data.length-1].balance;
     const monthsRemaining = Math.max(0, Math.round(currentCashBalance/weightedBurn*10)/10);
     for(let i=0; i<3; i++){
@@ -151,7 +151,7 @@ export default function BurnChart(props: Props) {
       data.push({
         name: moment(new Date()).add(i+1,'months').format('MMMM'),
         projected_Balance: prev + delta,
-        projected_Delta: delta + (delta-prevDelta)
+        projected_Delta: i===0?-weightedBurn:(delta + (delta-prevDelta)-weightedBurn)/2
       })
     }
 
@@ -179,7 +179,6 @@ export default function BurnChart(props: Props) {
   return (
     <div className="burnchart report_section">
       {!props.hideHeading && (<h2 className="holdingsHeading">{heading}</h2>)}
-      {showPL && (<PLComponent transactions={transactions} accounts={accounts} />)}
       {props.subheading !==undefined && (<h5>{props.subheading}</h5>)}
       {!props.hideLine && (<LineChart
         data={data}

@@ -66,10 +66,11 @@ export default function Menu(){
             <Link to="/Sharing">
               Reporting 
             </Link> 
-            
-            <Alerts />
-            <Avatar />
-            <SOSButton />
+            <div className="Menu-Buttons">
+              <Alerts />
+              <Avatar />
+              <SOSButton />
+            </div>
             <hr />
         </div>
     )

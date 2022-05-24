@@ -80,6 +80,7 @@ interface CompaniesContextShape extends CompaniesState {
     enableSharing: (company: CompanyType)=>void;
     disableSharing: (company: CompanyType)=>void;
     canEnableSharing: (company: CompanyType)=>boolean;
+    initialize: ()=>void;
     companiesByUser: CompaniesState;
 }
 const CompaniesContext = createContext<CompaniesContextShape>(
@@ -91,6 +92,15 @@ const CompaniesContext = createContext<CompaniesContextShape>(
  */
  export function CompaniesProvider(props: any) {
     const [companiesByUser, dispatch] = useReducer(reducer, initialState);
+    // console.log('funsies?');
+
+    const initialize = useCallback(async()=>{
+      console.log('funsies?');
+      const companyFromStorage = localStorage.getItem('selectedCompany');
+      console.log('storage string:', companyFromStorage);
+      const companyObjFromStorage = companyFromStorage?JSON.parse(companyFromStorage):null;
+      console.log(companyObjFromStorage);
+    }, [])
   
     const listCompanies = useCallback(async () => {
       try {
@@ -125,6 +135,7 @@ const CompaniesContext = createContext<CompaniesContextShape>(
         if(company){
           const canSeeMe = (await whoSeesMe(company.id)).data;
           const ICanSee = (await whoCanISee(company.id)).data;
+          await localStorage.setItem('selectedCompany', JSON.stringify(company));
           dispatch({ type: 'SELECT_COMPANY', 
             payload: { 
               company, 
@@ -132,6 +143,7 @@ const CompaniesContext = createContext<CompaniesContextShape>(
               ICanSee 
             }});
         } else {
+          await localStorage.removeItem('selectedCompany');
           dispatch({
             type: 'SELECT_COMPANY', 
             payload:null
@@ -275,6 +287,7 @@ const CompaniesContext = createContext<CompaniesContextShape>(
         revokePermissions,
         canEnableSharing,
         listFunders,
+        initialize,
         companiesByUser
       };
     }, [
@@ -289,6 +302,7 @@ const CompaniesContext = createContext<CompaniesContextShape>(
       revokePermissions, 
       canEnableSharing,
       listFunders,
+      initialize,
       companiesByUser
     ]);
   
@@ -306,12 +320,11 @@ const CompaniesContext = createContext<CompaniesContextShape>(
                   newState.currentCompany=action.payload.company
                   newState.ICanSee=action.payload.ICanSee;
                   newState.canSeeMe=action.payload.canSeeMe;
-                  localStorage.setItem('selectedCompany', JSON.stringify(action.payload));
+                  console.log(action.payload)
                 } else 
                   newState.currentCompany=null
                   newState.ICanSee=emptyExtendedCompanyArr;
                   newState.canSeeMe=emptyExtendedCompanyArr;
-                  localStorage.removeItem('selectedCompany');
                 return newState;
             case 'SUCCESSFUL_GET_COMPANIES':
                 newState.companies=action.payload;
@@ -331,7 +344,7 @@ const CompaniesContext = createContext<CompaniesContextShape>(
    */
   export default function useCompanies() {
     const context = useContext(CompaniesContext);
-  
+    context.initialize();
     if (!context) {
       throw new Error(`useCompaniess must be used within a CompaniessProvider`);
     }

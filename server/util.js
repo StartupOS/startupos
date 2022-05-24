@@ -94,6 +94,17 @@ const sanitizeTransactions = transactions =>
 const validItemStatuses = new Set(['good', 'bad']);
 const isValidItemStatus = status => validItemStatuses.has(status);
 
+/**********************
+ * Enhanced Logger
+ * 
+ * @param {String} s what to write to the log
+ *********************/
+const clog = async (s)=>{
+  const t = new Date();
+  console.log(t,'\\', s);
+
+}
+
 module.exports = {
   toArray,
   sanitizeAccounts,

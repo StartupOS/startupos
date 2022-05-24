@@ -38,4 +38,4 @@ export { default as MergeLinkButton} from './MergeLinkButton';
 export { default as PayrollSummary} from './PayrollSummary';
 export { default as BurnChart} from './BurnChart';
 export { default as PLComponent} from './PLComponent';
-
+export { default as SinglePage} from './SinglePage'

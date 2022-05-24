@@ -35,12 +35,12 @@ const createUser = async username => {
 
 
  const createLinkedInUser = async (userobj) => {
-  const {firstName, lastName, email, profileImageURL} = userobj;
+  const {firstName, lastName, email, picture} = userobj;
   const username = email;
   const query = {
     // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
     text: 'INSERT INTO users_table (username, given_name, family_name, email, picture, _json) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;',
-    values: [username, firstName, lastName, email, profileImageURL, JSON.stringify(userobj)],
+    values: [username, firstName, lastName, email, picture, JSON.stringify(userobj)],
   };
   try { 
     const { rows } = await db.query(query);
@@ -125,6 +125,41 @@ const retrieveUsers = async () => {
   return users;
 };
 
+const updateUser = async (user)=>{
+  const {firstName, lastName, email, picture} = user;
+  console.log(email)
+  console.log('in update user');
+  if(!email){
+    throw new Error('Username cannot be undefined');
+  }
+  const query = {
+    text: `
+    update users_table 
+    set
+      given_name=$2, 
+      family_name=$3, 
+      email=$1, 
+      picture=$4, 
+      _json=$5
+    WHERE username = $1
+    returning *`,
+    values: [email, firstName, lastName, picture, JSON.stringify(user)],
+  };
+  let users =[];
+  console.log(query);
+  try {
+    const resp = await db.query(query);
+    // console.log(resp);
+    users = resp.rows;
+  } catch (e) {
+    console.error('THERE WAS A FIREFIGHT');
+    console.log(e);
+  }
+  // the username column has a UNIQUE constraint, so this will never return more than one row.
+  console.log(users);
+  return users[0];
+}
+
 module.exports = {
   createUser,
   createLinkedInUser,
@@ -132,4 +167,5 @@ module.exports = {
   retrieveUserById,
   retrieveUserByUsername,
   retrieveUsers,
+  updateUser
 };

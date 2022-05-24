@@ -9,6 +9,7 @@ const Boom = require('@hapi/boom');
 const {
   retrieveUserByUsername,
   createLinkedInUser,
+  updateUser
 } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
 
@@ -31,10 +32,11 @@ router.get('/LinkedInCode',asyncWrapper(async (req,res)=>{
   let retJSON = {};
   let existingUser = null;
   const code  = req.query.code;
- 
+  const reURI = req.query.redirectURI && typeof req.query.redirectURI == 'string' && req.query.redirectURI.length ? req.query.redirectURI : null;
   console.log('\n\n\n\nCODE:');
   console.log(code);
-  const accessToken = await getAccessToken(code);
+  console.log(reURI)
+  const accessToken = await getAccessToken(code, reURI);
   console.log(1)
   console.log(accessToken)
   const userProfile = await getUserProfile(accessToken);
@@ -63,7 +65,7 @@ router.get('/LinkedInCode',asyncWrapper(async (req,res)=>{
     console.log(userFound);
     if(userFound){
       console.log(existingUser);
-      retJSON = existingUser;
+      retJSON = await updateUser(user);
     } else {
       try {
         retJSON = await createLinkedInUser(user);
@@ -90,7 +92,7 @@ const urlToGetUserEmail = 'https://api.linkedin.com/v2/clientAwareMemberHandles?
  * @param code returned from step 1
  * @returns accessToken if successful or null if request fails 
  */
-async function getAccessToken(code) {
+async function getAccessToken(code, reURI) {
   console.log('1.1')
   if(codes[code]){
     if(codes[code] === true ){
@@ -100,11 +102,13 @@ async function getAccessToken(code) {
     }
   }
   codes[code]=true;
+  console.log('reURI');
+  console.log(reURI);
 
   const parameters = {
     "grant_type": "authorization_code",
     "code": code,
-    "redirect_uri": process.env.LINKEDIN_OAUTH_REDIRECT,
+    "redirect_uri": reURI || process.env.LINKEDIN_OAUTH_REDIRECT,
     "client_id": process.env.LINKEDIN_CLIENT_ID,
     "client_secret": process.env.LINKEDIN_CLIENT_SECRET,
     "scope": process.env.LINKEDIN_SCOPE,

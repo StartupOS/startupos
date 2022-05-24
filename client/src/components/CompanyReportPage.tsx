@@ -30,7 +30,8 @@ import {
   LoadingCallout,
   ErrorMessage,
   PayrollSummary,
-  BurnChart
+  BurnChart,
+  PLComponent
 } from '.';
 
 // provides view of user's net worth, spending by category and allows them to explore
@@ -192,6 +193,11 @@ const CompanyReportPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       )}
       {numOfItems > 0 && transactions.length > 0 && (
         <>
+          <PLComponent 
+            transactions={transactions} 
+            accounts={accounts} 
+          />
+
           <BurnChart 
             transactions={transactions} 
             accounts={accounts}

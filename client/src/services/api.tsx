@@ -142,7 +142,7 @@ export const retrieveEmployee = (companyId:number, employeeId: number) => api.ge
 export const getPermissions = ()=> api.get('/permissions');
 
 // LinkedIn Code
-export const getLinkedInCredentials = (code:string) => api2.get(`/login/LinkedInCode?code=${code}`)
+export const getLinkedInCredentials = (code:string, redirect?:string) => api2.get(`/login/LinkedInCode?code=${code}&redirectURI=${redirect}`)
 
 
 // misc

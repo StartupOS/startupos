@@ -11,6 +11,7 @@ import { CompanyType } from './types';
 interface Props {
   hideForm: () => void;
   company?: CompanyType;
+  setCompany?: boolean;
 }
 enum fieldNames {
   id="id",
@@ -46,8 +47,16 @@ const c:CompanyType= {
 
 
 const AddCompanyForm = (props: Props) => {
-    const { createCompany, updateCompany, listCompanies } = useCompanies();
-    const [company, setCompany] = useState<CompanyType>(props.company ||c)  
+    const { createCompany, updateCompany, listCompanies, selectCompany } = useCompanies();
+    const [company, setCompany] = useState<CompanyType>(props.company ||c)
+    console.log(props.company);  
+    console.log(company);
+
+    useEffect(()=>{
+      if(props.company){
+        setCompany(props.company)
+      }
+    },[props.company])
   
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -57,6 +66,9 @@ const AddCompanyForm = (props: Props) => {
               updateCompany(company)
             } else {
               createCompany(company);
+              if(props.setCompany && !props.company){
+                selectCompany(company);
+              }
             }
         }
         props.hideForm();
@@ -84,9 +96,9 @@ const AddCompanyForm = (props: Props) => {
   }
 
   function FormField(props: FieldProps){
-    console.log(props.id, props.multiline)
+    console.log(props.id, company[props.name], props.multiline)
         return ( company &&
-            (<div className={"add-user__column-" + props.index}>
+            (<div className={"add-user__column-1 add-company-form"} key={props.id}>
                 <p className="value add-user__value">
                     {props.description}
                 </p>

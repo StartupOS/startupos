@@ -30,6 +30,12 @@ const createTransactions = async transactions => {
       plaidAccountId
     );
     const [category, subcategory] = categories;
+    const l = transactionName.length;
+    const vowels = ['a','e','i','o','u'];
+    const counts = vowels.map(v=>{
+        const reg = new RegExp('[^'+v+']', 'g');
+        return transactionName.replace(reg,'').length;
+    });
     try {
       const query = {
         text: `
@@ -47,12 +53,21 @@ const createTransactions = async transactions => {
               unofficial_currency_code,
               date,
               pending,
-              account_owner
+              account_owner,
+              l,
+              a,
+              e,
+              i,
+              o,
+              u
             )
           VALUES
-            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);
+            (
+              $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
+              $14, $15, $16, $17, $18, $19,
+            );
         `,
-        values: [
+        values: ([
           accountId,
           plaidTransactionId,
           plaidCategoryId,
@@ -66,7 +81,8 @@ const createTransactions = async transactions => {
           transactionDate,
           pending,
           accountOwner,
-        ],
+          l
+        ]).concat(counts),
       };
       await db.query(query);
     } catch (err) {

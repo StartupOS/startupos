@@ -29,6 +29,13 @@ interface Props {
     hideLine?:boolean;
     hideHeading?:boolean;
 }
+function makePercent(inn:string):string{
+    let n = +inn
+    n*=10000;
+    n=Math.floor(n)/100;
+    const s = n+"%";
+    return s;
+}
 function truncate(inn:number, dig:number):string{
     const retNum = Math.round(inn*Math.pow(10,dig))/Math.pow(10,dig)
     return !isFinite(retNum)?'-':retNum.toLocaleString();
@@ -47,7 +54,6 @@ function txInAccounts(tx:TransactionType, accounts:AccountType[]):boolean{
 }
 export default function PLComponent(props: Props) {
     const { transactions, accounts } = props;
-    console.log(transactions)
 
     const filterAccounts = (
         accountSubtypes: Array<AccountType['subtype']>
@@ -70,7 +76,6 @@ export default function PLComponent(props: Props) {
         txInAccounts(t, desiredAccounts) &&
         (t.amount > 0 && inclSpend || t.amount<0 && inclRev)
         );
-        console.log(filteredTransactions);
         return filteredTransactions;
     }
     const cashAccounts = filterAccounts([
@@ -94,8 +99,6 @@ export default function PLComponent(props: Props) {
         let delta = txs.reduce((p,c)=>Math.round((p+(c.amount*-1))*100)/100,0);
         let rev = rtxs.reduce((p,c)=>Math.round((p+(c.amount*-1))*100)/100,0);
         let spend = stxs.reduce((p,c)=>Math.round((p+(c.amount))*100)/100,0);
-        console.log(months[i],':',delta)
-        console.log(txs);
         monthlyDelta.push(delta);
         annualRev.push(rev);
         annualSpend.push(spend);
@@ -113,7 +116,12 @@ export default function PLComponent(props: Props) {
         benchmark: number;
         variance: number
     }
-    
+    function makeBencmark(rev:number):number{
+        const COEF = 10;
+        const POW = 20
+        const b = Math.min(1/(COEF*Math.pow(Math.log10(Math.log10(rev)),POW)),Math.max(10,1000000/rev))
+        return b;
+    }
     const data:dataType[] = months.map((m,i)=>{
       return {
           name:m,
@@ -122,21 +130,21 @@ export default function PLComponent(props: Props) {
           rev: annualRev[i]/1000,
           spend: annualSpend[i]/1000,
           ratio: annualSpend[i]/annualRev[i],
-          benchmark:0.1,
-          variance:annualSpend[i]/annualRev[i] - 0.1,
+          benchmark:makeBencmark(annualRev[i]),
+          variance:annualSpend[i]/annualRev[i] - makeBencmark(annualRev[i]),
       }  
     });
     data.reverse();
 
     return (<>
-    <h3>Profit & Loss</h3> 
+    <h2>Profit & Loss</h2> 
     <table className="PL-Table">
         <thead>
             <tr>
                 <th>(All $ in 1,000s)</th>
-                <th>TTM</th>
+                <th title="Trailing Twelve Months">TTM</th>
                 <th>Prior</th>
-                <th>&Delta; $</th>
+                <th>&Delta;</th>
                 <th>&Delta; %</th>
             </tr>
         </thead>
@@ -145,43 +153,43 @@ export default function PLComponent(props: Props) {
                 <td className="RowHeader">Sales/Revenue</td>
                 <td>{truncate(data[1].rev, 2)}</td>
                 <td>{truncate(data[0].rev, 2)}</td>
-                <td>{truncate(data[1].rev - data[0].rev,2)}</td>
-                <td>{truncate((data[1].rev - data[0].rev)/data[0].rev,2)}</td>
+                <td className={data[1].rev>data[0].rev?'good':'bad'}>{truncate(data[1].rev - data[0].rev,2)}</td>
+                <td className={data[1].rev>data[0].rev?'good':'bad'}>{makePercent(truncate((data[1].rev - data[0].rev)/data[0].rev,2))}</td>
             </tr>
             <tr>
                 <td className="RowHeader">Spend</td>
                 <td>{truncate(data[1].spend, 2)}</td>
                 <td>{truncate(data[0].spend, 2)}</td>
-                <td>{truncate(data[1].spend - data[0].spend,2)}</td>
-                <td>{truncate((data[1].spend - data[0].spend)/data[0].spend,4)}</td>
+                <td className={data[1].spend<data[0].spend?'good':'bad'}>{truncate(data[1].spend - data[0].spend,2)}</td>
+                <td className={data[1].spend<data[0].spend?'good':'bad'}>{makePercent(truncate((data[1].spend - data[0].spend)/data[0].spend,4))}</td>
             </tr>
             <tr>
                 <td className="RowHeaderLite">% of Revenue</td>
-                <td>{truncate(data[1].ratio, 2)}</td>
-                <td>{truncate(data[0].ratio, 2)}</td>
-                <td>{truncate(data[1].ratio - data[0].ratio,4)}</td>
-                <td>{truncate((data[1].ratio - data[0].ratio)/data[0].ratio,4)}</td>
+                <td>{makePercent(truncate(data[1].ratio, 2))}</td>
+                <td>{makePercent(truncate(data[0].ratio, 2))}</td>
+                <td className={data[1].ratio<data[0].ratio?'good':'bad'}>{truncate(data[1].ratio - data[0].ratio,4)}</td>
+                <td className={data[1].ratio<data[0].ratio?'good':'bad'}>{makePercent(truncate((data[1].ratio - data[0].ratio)/data[0].ratio,4))}</td>
             </tr>
             <tr>
                 <td className="RowHeaderLite">Benchmark</td>
-                <td>{truncate(data[1].benchmark, 2)}</td>
-                <td>{truncate(data[0].benchmark, 2)}</td>
+                <td>{makePercent(truncate(data[1].benchmark, 2))}</td>
+                <td>{makePercent(truncate(data[0].benchmark, 2))}</td>
                 <td>{truncate(data[1].benchmark - data[0].benchmark,4)}</td>
-                <td>{truncate((data[1].benchmark - data[0].benchmark)/data[0].benchmark,4)}</td>
+                <td>{makePercent(truncate((data[1].benchmark - data[0].benchmark)/data[0].benchmark,4))}</td>
             </tr>
             <tr>
                 <td className="RowHeaderLite">Variance</td>
-                <td>{truncate(data[1].variance, 2)}</td>
-                <td>{truncate(data[0].variance, 2)}</td>
+                <td className={data[1].variance<0?'good':'bad'}>{truncate(data[1].variance, 2)}</td>
+                <td className={data[0].variance<0?'good':'bad'}>{truncate(data[0].variance, 2)}</td>
                 <td>{truncate(data[1].variance - data[0].variance,4)}</td>
-                <td>{truncate((data[1].variance - data[0].variance)/data[0].variance,4)}</td>
+                <td>{makePercent(truncate((data[1].variance - data[0].variance)/data[0].variance,4))}</td>
             </tr>
             <tr>
                 <td className="RowHeader">Net Change in Cash</td>
-                <td>{truncate(data[1].delta, 2)}</td>
-                <td>{truncate(data[0].delta, 2)}</td>
-                <td>{truncate(data[1].delta - data[0].delta,2)}</td>
-                <td>{truncate((data[1].delta - data[0].delta)/data[0].delta,2)}</td>
+                <td className={data[1].delta>0?'good':'bad'}>{truncate(data[1].delta, 2)}</td>
+                <td className={data[0].delta>0?'good':'bad'}>{truncate(data[0].delta, 2)}</td>
+                <td className={data[1].delta>data[0].delta?'good':'bad'}>{truncate(data[1].delta - data[0].delta,2)}</td>
+                <td className={data[1].delta>data[0].delta?'good':'bad'}>{makePercent(truncate((data[1].delta - data[0].delta)/data[0].delta,2))}</td>
             </tr>
         </tbody>
     </table>

@@ -301,3 +301,138 @@ div.subText{
     color:blue;
     background-color: lightcyan;
 }
+
+
+.PL-Table{
+    font-family: auto;
+    margin-bottom: 2em;
+    thead {
+        th{
+            font-size: larger;
+            border-bottom: 1px black solid;
+            line-height: 0.1em;
+        }
+    }
+    tbody {
+        td{
+            text-align: right;
+        }
+        td.good{
+            color: darkgreen;
+        }
+        td.bad{
+            color: red;
+        }
+        td.RowHeader,td.RowHeaderLite{
+            text-align: left;
+        }
+        td.RowHeader{
+            font-weight: bolder;
+        }
+        td.RowHeaderLite{
+            font-style: italic;
+            font-weight: 400;
+        }
+        tr:nth-child(odd) {
+            background-color: aliceblue;
+        }
+        tr:nth-child(even) {
+            background-color: honeydew;
+        }
+    }    
+}
+.SP-page{
+    margin-top:100px;
+}
+@media (max-width:1000px){
+    .addCompanyForm{
+        width:90vw;
+        margin-left:-5vw;
+    }
+    .Menu_Spacer-large, .Menu_Spacer-small {display:none}
+    div.SOS_Menu>a{
+        display:none;
+    }
+    div.Menu-Buttons{
+        position: relative;
+        top: 0%;
+    }
+    .SP-page{
+        margin-top:100px;
+        .account-data-row{
+            width: 90vw;
+            margin-left: -10vw;
+        }
+        #employeesWrapper .account-data-row {
+            border: 10px groove;
+            margin-left: -7vw;
+        }
+    }
+    hr{display:none}
+    .accountCards Button{
+        margin:6px;
+    }
+    h3{
+        word-wrap:break-word;
+        white-space: normal;
+    }
+   
+    .add-user__column--1{
+        width: 90vw;
+        margin-left: -5vw;
+    }
+    .App{
+        padding: 4em;
+    }
+    
+}
+.Menu-Buttons{
+    position: relative;
+    top: -100%;
+}
+.add-company-form{
+    min-width:350px;
+    .MuiFormControl-root{
+        min-width: 300px;
+        max-width: 74vw;
+    }
+    
+}
+
+.add-user__column--1{
+    margin:10px;
+}
+
+img.main-profile{
+    border-radius: 50%;
+    border: 2vw ridge #1976d2;
+    margin: 0 28vw;
+    width: 30vw;
+    max-width: 150px;
+}
+@media (min-width:1000px) {
+    .SOS_Menu hr{
+        display:block;
+        clear: both;
+    }
+}
+
+@media (max-width:390px){
+    .Menu-Buttons{
+        .Notifications{
+            display: none;
+        }
+    }
+    .addCompanyForm{
+        min-width:90vw;
+        margin-left:5vw;
+        .MuiFormControl-root{
+            min-width: 200px;
+            max-width: 74vw;
+        }
+        
+    }
+    .App{
+        padding: 1em;
+    }
+}

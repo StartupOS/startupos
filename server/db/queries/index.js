@@ -35,7 +35,8 @@ const {
   retrieveUsers,
   retrieveUserById,
   retrieveUserByUsername,
-  createLinkedInUser
+  createLinkedInUser,
+  updateUser
 } = require('./users');
 const { createLinkEvent } = require('./linkEvents');
 
@@ -119,6 +120,7 @@ module.exports = {
   retrieveUserByUsername,
   retrieveUsers,
   createLinkedInUser,
+  updateUser,
   // assets
   createAsset,
   retrieveAssetsByCompany,

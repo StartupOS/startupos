@@ -90,7 +90,9 @@ export function CurrentUserProvider(props: any) {
           localStorage.setItem('token', user.token);
           toast.success(`Successful login.  Welcome back ${user.given_name}`);
           dispatch({ type: 'SUCCESSFUL_GET', payload: user });
-          history.push(`/Dashboard`);
+          if(document.location.pathname != '/SignUp')
+            history.push(`/Dashboard`);
+          
         } else {
           toast.error(`Username ${username} is invalid.  Try again. `);
           dispatch({ type: 'FAILED_GET' });
@@ -191,11 +193,13 @@ export default function useCurrentUser() {
   const getCodeFromWindowURL = (url:string) => {
     const popupWindowURL = new URL(url);
     const code = popupWindowURL.searchParams.get("code");
+    
     return code;
   };
   
   const getUserCredentials = async (code:string) => {
-    const res = await apiGetLinkedInCredentials(code);
+    const redirect_uri = document.location.origin + document.location.pathname;
+    const res = await apiGetLinkedInCredentials(code, redirect_uri);
     const user = res.data;
     localStorage.setItem('user', JSON.stringify(user));
     context.login(user);

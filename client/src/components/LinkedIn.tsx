@@ -1,20 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import linkedInLoginImage from './Sign-In-Small---Default.png';
 import { useCurrentUser } from '../services';
 
 type User = {
     given_name: string
     family_name: string
-    email: string | null
+    username: string | null
     picture: string
 }
-
+type Props = {
+  redirectUrlProp?:string;
+}
 console.log(process.env);
 
-export default function LinkedIn(){
-  const { userState } = useCurrentUser();
-  const [loggedIn]= useState(!!(userState.currentUser && userState.currentUser.email));
-  const [user] = useState<User|null>(userState.currentUser);
+export default function LinkedIn(props:Props){
+  const { userState, getCurrentUser } = useCurrentUser();
+  const [loggedIn, setLoggedIn]= useState(!!(userState.currentUser && userState.currentUser.username));
+  const [user, setUser] = useState<User|null>(userState.currentUser);
+  useEffect(() => {
+    getCurrentUser();
+  }, [getCurrentUser]);
+  useEffect(() => {
+    setUser(userState.currentUser);
+    setLoggedIn(!!(userState.currentUser && userState.currentUser.username));
+  }, [userState]);
+  console.log(userState)
 
   const LinkedInApi = {
     clientId: process.env.REACT_APP_LINKEDIN_CLIENT_ID,
@@ -28,16 +38,18 @@ export default function LinkedIn(){
 
   const { clientId, redirectUrl, oauthUrl, scope, state } = LinkedInApi;
   let encodedURI = "";
+  console.log(props.redirectUrlProp);
   if(redirectUrl)
-    encodedURI = encodeURIComponent(redirectUrl);
+    encodedURI = encodeURIComponent(props.redirectUrlProp || redirectUrl);
+  console.log(encodedURI);
   const windowUrl = `${oauthUrl}&client_id=${clientId}&scope=${scope}&redirect_uri=${encodedURI}&state=${state}`;
   
     console.log(user);
     const content = loggedIn && user?(
         <>
-          <img src={user.picture} alt="Profile" />
+          {user.picture && <img src={user.picture} alt="Profile" className="main-profile"/>}
           <h3>{`${user.given_name} ${user.family_name}`}</h3>
-          <h3>{user.email}</h3>
+          <h3>{user.username}</h3>
         </>
       ):(
         <a href={ windowUrl}>

@@ -8,7 +8,8 @@ import {
   CompanyReportPage,
   AccountsPage,
   SharingPage,
-  EmployeesPage, 
+  EmployeesPage,
+  SinglePage, 
   Landing2, 
   Sockets, 
   OAuthLink, 
@@ -88,6 +89,7 @@ function App() {
                                   <Route path="/Sharing" component={SharingPage} />
                                   <Route path="/Employees" component={EmployeesPage} />
                                   <Route path="/admin" component={UserList} />
+                                  <Route path="/SignUp" component={SinglePage} />
                                 </Switch>
                               </EmployeesProvider>
                             </MergeLinkProvider>

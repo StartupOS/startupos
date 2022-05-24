@@ -301,6 +301,12 @@ CREATE TABLE if not exists transactions_table
   plaid_category_id text,
   category text,
   subcategory text,
+  l INT not NULL,
+  a INT not NULL,
+  e INT not NULL,
+  i INT not NULL,
+  o INT not NULL,
+  u INT not NULL,
   type text NOT NULL,
   name text NOT NULL,
   amount numeric(28,10) NOT NULL,
@@ -538,3 +544,31 @@ create view messages as
   on sU.id = m.sender_user
   left outer join users rU
   on rU.id = m.receiver_user;
+
+
+create table categories_table(
+  id serial primary KEY,
+  name TEXT not null
+);
+
+create table merchants_table(
+  id serial primary KEY,
+  name TEXT not null
+)
+
+create table category_transaction(
+  id INT,
+  tx_id int not null references transactions_table(id) on delete set null,
+  cat_id int not null references table_table(id) on delete set null
+);
+
+create table category_merchant(
+  id INT,
+  merchant_id int not null references transactions_table(id) on delete set null,
+  cat_id int not null references table_table(id) on delete set null
+)
+create table transaction_merchant(
+  id INT,
+  merchant_id int not null references transactions_table(id) on delete set null,
+  tx_id int not null references table_table(id) on delete set null
+)

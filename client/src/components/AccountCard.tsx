@@ -49,8 +49,8 @@ export default function AccountCard(props: Props) {
   const bString = props && props.account.logo ? _arrayBufferToBase64(props.account.logo.data): "";
   return (
     <div>
-      <div className="account-data-row" style={{border:'1px solid '+primary_color}}>
-      {props.account.logo && (<img src={"data:image/png;base64, " + bString} className="AccountLogo" alt="Account Logo" />)}
+      <div className="account-data-row" style={{border:'10px groove '+primary_color}}>
+      {<img src={props.account.logo ? "data:image/png;base64, " + bString : "/lifePreserver.png"} className="AccountLogo" alt="Account Logo" />}
         <div className="account-data-row__left">
           <div className="account-data-row__name">{props.account.name}</div>
           <div className="account-data-row__balance">{`${startCase(

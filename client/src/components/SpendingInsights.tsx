@@ -21,9 +21,9 @@ export default function SpendingInsights(props: Props) {
       transactions.filter(tx => {
         const date = new Date(tx.date);
         const today = new Date();
-        const oneMonthAgo = new Date(new Date().setDate(today.getDate() - 30));
+        const oneYearAgo = new Date(new Date().setDate(today.getDate() - 365));
         return (
-          date > oneMonthAgo &&
+          date > oneYearAgo &&
           tx.category !== 'Payment' &&
           tx.category !== 'Transfer' &&
           tx.category !== 'Interest'
