@@ -45,9 +45,10 @@ export default function SpendingInsights(props: Props) {
 
   const namesObject = useMemo((): Categories => {
     return monthlyTransactions.reduce((obj: Categories, tx) => {
-      tx.name in obj
-        ? (obj[tx.name] = tx.amount + obj[tx.name])
-        : (obj[tx.name] = tx.amount);
+      console.log(tx.merchant)
+      tx.merchant in obj
+        ? (obj[tx.merchant] = tx.amount + obj[tx.merchant])
+        : (obj[tx.merchant] = tx.amount);
       return obj;
     }, {});
   }, [monthlyTransactions]);
@@ -77,15 +78,18 @@ export default function SpendingInsights(props: Props) {
         <div className="userDataBox">
           <div className="holdingsList">
             <h4 className="holdingsHeading">Top 5 Vendors</h4>
-            <div className="spendingInsightData">
-              <p className="title">Vendor</p> <p className="title">Amount</p>
-              {sortedNames.map((vendor: any[]) => (
-                <>
-                  <p>{vendor[0]}</p>
-                  <p>{currencyFilter(vendor[1])}</p>
-                </>
+            <table className="spendingInsightData">
+              <tr>
+                <th className="title">Vendor</th>
+                <th className="title">Amount</th>
+              </tr>
+              {sortedNames.map((vendor: any[],c) => (
+                <tr key={c}>
+                  <td>{vendor[0]}</td>
+                  <td>{currencyFilter(vendor[1])}</td>
+                </tr>
               ))}
-            </div>
+            </table>
           </div>
         </div>
       </div>

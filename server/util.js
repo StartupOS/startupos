@@ -89,10 +89,29 @@ const sanitizeTransactions = transactions =>
     'amount',
     'created_at',
     'updated_at',
+    'merchant'
   ]);
 
 const validItemStatuses = new Set(['good', 'bad']);
 const isValidItemStatus = status => validItemStatuses.has(status);
+
+const quote = (s)=>{
+  let o = '"';
+  for(let c in s){
+    switch(c){
+      case '"':
+        o+='\"';
+        break;
+      case '\\':
+        o+='\\\\'
+        break;
+      default:
+        o+=c
+    }
+  }
+  o+='"';
+  return o;
+}
 
 /**********************
  * Enhanced Logger
@@ -101,7 +120,7 @@ const isValidItemStatus = status => validItemStatuses.has(status);
  *********************/
 const clog = async (s)=>{
   const t = new Date();
-  console.log(t,'\\', s);
+  console.log(t,',', quote(s));
 
 }
 
@@ -113,4 +132,5 @@ module.exports = {
   sanitizeTransactions,
   validItemStatuses,
   isValidItemStatus,
+  clog
 };

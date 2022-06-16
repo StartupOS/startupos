@@ -24,7 +24,7 @@ const {
 const PLAID_SECRET =
   PLAID_ENV === 'development' ? PLAID_SECRET_DEVELOPMENT : PLAID_SECRET_SANDBOX;
 
-const OPTIONS = { clientApp: 'Plaid-Pattern' };
+const OPTIONS = { clientApp: 'StartupOS' };
 
 // We want to log requests to / responses from the Plaid API (via the Plaid client), as this data
 // can be useful for troubleshooting.

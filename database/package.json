@@ -1,0 +1,24 @@
+{
+    "name": "database",
+    "version": "1.0.7",
+    "private": true,
+    "scripts": {
+        "start": "/home/jason/.nvm/versions/node/v14.18.1/bin/node ./index.js",
+        "debug": "nodemon --inspect=0.0.0.0:9229 index.js",
+        "lint": "eslint **/*.js -c .eslintrc.json",
+        "seedMerchants": "tsc -p . && node dist/scripts/seedMerchants.js",
+        "seedCategories": "npx ts-node src/scripts/seedCategories.ts",
+        "seedSubcategories": "npx ts-node src/scripts/seedSubcategories.ts"
+    },
+    "dependencies": {
+        "dotenv": "^16.0.1",
+        "moment": "^2.29.1",
+        "morgan": "~1.9.0",
+        "pg": "^8.7.1",
+        "typeorm": "^0.3.6"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.39",
+        "typescript": "^4.6.4"
+    }
+}

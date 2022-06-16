@@ -551,6 +551,28 @@ create table categories_table(
   name TEXT not null
 );
 
+create table subcategories_table(
+  id serial primary KEY,
+  name TEXT unique not null
+);
+
+create table category_subcategory_table(
+  id serial primary KEY,
+  sc_id int not null references subcategories_table(id) on delete set null,
+  cat_id int not null references categories_table(id) on delete set null
+);
+
+create view category_subcategory as (
+  select
+    st.id as sc_id,
+    st.name as subcategory,
+    ct.name as category,
+    ct.id as cat_id
+  from category_subcategory_table sct
+  join subcategories_table st on sct.sc_id = st.id
+  join categories_table ct on ct.id = sct.cat_id
+)
+
 create table merchants_table(
   id serial primary KEY,
   name TEXT not null
@@ -559,16 +581,35 @@ create table merchants_table(
 create table category_transaction(
   id INT,
   tx_id int not null references transactions_table(id) on delete set null,
-  cat_id int not null references table_table(id) on delete set null
+  cat_id int not null references categories_table(id) on delete set null
+);
+
+create table subcategory_merchant(
+  id serial PRIMARY KEY,
+  merchant_id int unique not null references merchants_table(id) on delete set null,
+  sc_id int not null references subcategories_table(id) on delete set null
 );
 
 create table category_merchant(
-  id INT,
-  merchant_id int not null references transactions_table(id) on delete set null,
-  cat_id int not null references table_table(id) on delete set null
-)
+  id serial PRIMARY KEY,
+  merchant_id int unique not null references merchants_table(id) on delete set null,
+  cat_id int not null references categories_table(id) on delete set null
+);
+
 create table transaction_merchant(
-  id INT,
-  merchant_id int not null references transactions_table(id) on delete set null,
-  tx_id int not null references table_table(id) on delete set null
-)
+  id serial PRIMARY KEY,
+  tx_id int not null references transactions_table(id) on delete set null,
+  merchant_id int not null references merchant_table(id) on delete set null
+);
+
+create table subcategory_merchant (
+	id serial primary key,
+	sc_id int not null references subcategories_table(id) on delete set null,
+	merchant_id int unique not null references merchants_table(id) on delete set null
+);
+
+create table subcategory_employee (
+	id serial primary key,
+	sc_id int not null references subcategories_table(id) on delete set null,
+	employee_id int unique not null references employees_table(id) on delete set null
+);

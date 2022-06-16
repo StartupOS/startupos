@@ -44,12 +44,14 @@ const createUser = async username => {
   };
   try { 
     const { rows } = await db.query(query);
+    console.log(rows);
+    return rows[0];
   } catch (err) {
     console.log(err);
+    throw new Error("Don't wind up here.")
   }
 
-  console.log(rows);
-  return rows[0];
+  
 };
 
 /**

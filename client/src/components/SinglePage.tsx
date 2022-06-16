@@ -188,11 +188,17 @@ const SinglePage = ({ match }: RouteComponentProps<RouteInfo>) => {
   document.getElementsByTagName('body')[0].style.overflow = 'auto'; // to override overflow:hidden from link pane
   return (
     <div className="SP-page">
+        {!!!userId && (<h3>Create Account</h3>)}
+        {!!!userId && (<p> StartupOS is linked to a social profile. Right now we only support LinkedIn, though Google is coming soon.</p>
+        )}
+        
         <LinkedIn redirectUrlProp="https://beta.startupos.dev/SignUp" />
         {userId && 
           (currentCompany ? <AddCompanyForm hideForm={hideForm} setCompany={true} company={currentCompany} /> :
           <AddCompanyForm hideForm={hideForm} setCompany={true}  />)
         }
+        {(!!userId && currentCompany) && (<h3>Link Accounts</h3>)}
+        {(!!userId && currentCompany) && (<p> StartupOS pulls data via a read only connection via Plaid.</p>)}
         <div id="accountsWrapper">
         {accounts.map(account => (
             <div className="accountCards" key={account.id}>
@@ -206,6 +212,8 @@ const SinglePage = ({ match }: RouteComponentProps<RouteInfo>) => {
             </LinkButton>
           )}
         </div>
+        {(!!userId && currentCompany) && (<h3>Link Payroll and Accounting Providers</h3>)}
+        {(!!userId && currentCompany) && (<p> StartupOS pulls data via a read only connection that pulls from Quickboooks, Justworks, Gusto, and hundreds more.</p>)}
         <div id="employeesWrapper">
           {employees.map(employee => (
               <div className="accountCards" key={employee.id}>

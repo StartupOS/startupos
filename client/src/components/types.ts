@@ -67,6 +67,7 @@ export interface TransactionType {
   account_owner: string;
   created_at: string;
   updated_at: string;
+  merchant: string;
 }
 
 export interface AssetType {

@@ -1,0 +1,13 @@
+[
+  {
+    "name": "default",
+    "type": "postgres",
+    "host": "jason-db.startupos.dev",
+    "port": 5432,
+    "username": "postgres",
+    "password": "43q0iwr4F4nuFexI",
+    "database": "",
+    "synchronize": false,
+    "entities": ["entities/*.js"]
+  }
+]
